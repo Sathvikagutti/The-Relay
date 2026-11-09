@@ -1,0 +1,422 @@
+[
+  {
+    "question_id": "q01",
+    "category": "clear",
+    "request_id": "cf7ca77dec9b",
+    "answer_grade": "correct",
+    "status": "ok",
+    "answer": "According to the passage: We call our particular attention \"Scaled Dot-Product Attention\" (Figure 2). The input consists of queries and keys of dimension dk, and valu",
+    "reference": "Keys (and values) have dimension dk; each head uses dk = dv = dmodel/h = 64 with h = 8.",
+    "citations": [
+      {
+        "label": "attention p.4 §3.2.1 Scaled Dot-Product Attention",
+        "quote": "We call our particular attention \"Scaled Dot-Product Attention\" (Figure 2). The input consists of queries and keys of dimension dk, and values of dimension dv. We compute the dot",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1203,
+    "tokens_out": 91,
+    "retries": 0,
+    "first_token_ms": 271.08330000191927,
+    "total_ms": 2122.4403000087477
+  },
+  {
+    "question_id": "q02",
+    "category": "clear",
+    "request_id": "873840dc7d89",
+    "answer_grade": "correct",
+    "status": "ok",
+    "answer": "According to the passage: and W O ∈ Rhdv×dmodel. In this work we employ h = 8 parallel attention layers, or heads. For each of these we use dk = dv = dmodel/h = 64. D",
+    "reference": "h = 8 heads, dk = dv = dmodel/h = 64.",
+    "citations": [
+      {
+        "label": "attention p.5 §3.2.2 Multi-Head Attention",
+        "quote": "and W O ∈ Rhdv×dmodel. In this work we employ h = 8 parallel attention layers, or heads. For each of these we use dk = dv = dmodel/h = 64. Due to the reduced dimension of each",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1093,
+    "tokens_out": 103,
+    "retries": 0,
+    "first_token_ms": 77.03799998853356,
+    "total_ms": 1764.316399989184
+  },
+  {
+    "question_id": "q03",
+    "category": "clear",
+    "request_id": "4aa2a0c245e6",
+    "answer_grade": "wrong",
+    "status": "ok",
+    "answer": "According to the passage: Helium pre-training. An overview of the training stages and hyper parameters is pro- vided in Table 1. For every training phase, we use Adam",
+    "reference": "Adam with beta1=0.9, beta2=0.98, eps=1e-9; lrate = d_model^-0.5 * min(step^-0.5, step * warmup^-1.5), warmup_steps = 4000.",
+    "citations": [
+      {
+        "label": "moshi p.20 §4.4 Training stages and hyper-parameters",
+        "quote": "Helium pre-training. An overview of the training stages and hyper parameters is pro- vided in Table 1. For every training phase, we use AdamW (Loshchilov and Hutter, 2019), with a",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1303,
+    "tokens_out": 83,
+    "retries": 0,
+    "first_token_ms": 87.33939996454865,
+    "total_ms": 1443.2724000071175
+  },
+  {
+    "question_id": "q04",
+    "category": "clear",
+    "request_id": "c4a89f7e3be7",
+    "answer_grade": "wrong",
+    "status": "ok",
+    "answer": "According to the passage: • We propose Moshi, a new architecture for audio language modeling, which combines Helium with a smaller Transformer (Vaswani et al., 2017)",
+    "reference": "A text token stream produced by Moshi itself, aligned with the audio, predicted as a prefix to the audio tokens; it improves generation quality and enables streaming ASR/TTS.",
+    "citations": [
+      {
+        "label": "moshi p.3 §1 Introduction",
+        "quote": "• We propose Moshi, a new architecture for audio language modeling, which combines Helium with a smaller Transformer (Vaswani et al., 2017) model to predict audio to- kens in a",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1604,
+    "tokens_out": 84,
+    "retries": 0,
+    "first_token_ms": 356.2650000094436,
+    "total_ms": 1770.4194000107236
+  },
+  {
+    "question_id": "q05",
+    "category": "clear",
+    "request_id": "a334f04d12ae",
+    "answer_grade": "correct",
+    "status": "ok",
+    "answer": "According to the passage: the loss effectively guides the model toward the desired compression ratio in practice. In practice, as our architectural design encourages",
+    "reference": "A regulariser on the routing/boundary probabilities that pushes the achieved compression ratio toward the target ratio, preventing trivial solutions (compress nothing or compress everything).",
+    "citations": [
+      {
+        "label": "dynamic_chunking p.8 §2.2.3 Ratio Loss",
+        "quote": "the loss effectively guides the model toward the desired compression ratio in practice. In practice, as our architectural design encourages the routing module to make confident",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1320,
+    "tokens_out": 77,
+    "retries": 0,
+    "first_token_ms": 158.7615999742411,
+    "total_ms": 1461.781100020744
+  },
+  {
+    "question_id": "q06",
+    "category": "multi_passage",
+    "request_id": "36e12b2d52b2",
+    "answer_grade": "correct",
+    "status": "ok",
+    "answer": "According to the passage: Metrics. Section 3.4.4 and Appendix C describe how Inner Monologue can provide a streaming TTS or streaming ASR system by simply changing th",
+    "reference": "Moshi reports streaming ASR via Inner Monologue in Section 5.7, with WER on LibriSpeech test-clean in its streaming ASR table.",
+    "citations": [
+      {
+        "label": "moshi p.31 §5.7 Streaming ASR and TTS",
+        "quote": "Metrics. Section 3.4.4 and Appendix C describe how Inner Monologue can provide a streaming TTS or streaming ASR system by simply changing the delay it uses between text and audio",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1410,
+    "tokens_out": 88,
+    "retries": 0,
+    "first_token_ms": 809.258499997668,
+    "total_ms": 2506.354500015732
+  },
+  {
+    "question_id": "q07",
+    "category": "multi_passage",
+    "request_id": "21badb0a605f",
+    "answer_grade": "wrong",
+    "status": "ok",
+    "answer": "According to the passage: To reduce sequence length, several approaches downsample the input sequence hierarchically. The most straightforward methods operate indepen",
+    "reference": "The Transformer replaces recurrence with self-attention so positions are computed in parallel (Section 4 compares complexity per layer); H-Net instead learns data-dependent chunk boundaries and processes coarser stages at lower resolution.",
+    "citations": [
+      {
+        "label": "dynamic_chunking p.31 §A.1.2 Static Chunking",
+        "quote": "To reduce sequence length, several approaches downsample the input sequence hierarchically. The most straightforward methods operate independently of input context, partitioning",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1613,
+    "tokens_out": 76,
+    "retries": 0,
+    "first_token_ms": 122.79900000430644,
+    "total_ms": 1857.1565999882296
+  },
+  {
+    "question_id": "q08",
+    "category": "multi_passage",
+    "request_id": "0b266fa08ca6",
+    "answer_grade": "wrong",
+    "status": "ok",
+    "answer": "According to the passage: information across stages. Without network normalization, outputs from deeper components (especially the many-layered main network) would do",
+    "reference": "Helium, a text language model, and Mimi, a neural audio codec producing semantic-acoustic tokens; a smaller Transformer models the audio tokens hierarchically.",
+    "citations": [
+      {
+        "label": "dynamic_chunking p.9 §2.3 Improved Techniques for Hierarchical Sequence Modeling",
+        "quote": "information across stages. Without network normalization, outputs from deeper components (especially the many-layered main network) would dominate the residual signals from",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1570,
+    "tokens_out": 66,
+    "retries": 0,
+    "first_token_ms": 108.35059999953955,
+    "total_ms": 2224.216600006912
+  },
+  {
+    "question_id": "q09",
+    "category": "multi_passage",
+    "request_id": "73a6e4084b0c",
+    "answer_grade": "wrong",
+    "status": "ok",
+    "answer": "According to the passage: '!'!\"#'!\"$'!\"% 1−'!1−'!\"#1−'!\"$ E \u00016QTBNQMFS C \u0001%PXOTBNQMFS B \u00013PVUJOH\u0001.PEVMF /0 - /0\" 0\"#$ * ̅. +\" %ZOBNJD\u0001$IVOLJOHn_e ℳ Figure 1: (left) A",
+    "reference": "A routing module emits boundary probabilities from similarity/downsampling scores (Section 2.2.1), and the ratio loss plus the language-modelling loss train it (Section 2.2.3).",
+    "citations": [
+      {
+        "label": "dynamic_chunking p.3 §1 Introduction",
+        "quote": "'!'!\"#'!\"$'!\"% 1−'!1−'!\"#1−'!\"$ E \u00016QTBNQMFS C \u0001%PXOTBNQMFS B \u00013PVUJOH\u0001.PEVMF /0 - /0\" 0\"#$ * ̅. +\" %ZOBNJD\u0001$IVOLJOHn_e ℳ Figure 1: (left) Architectural overview of H-Net with a",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1510,
+    "tokens_out": 78,
+    "retries": 0,
+    "first_token_ms": 78.49090005038306,
+    "total_ms": 1460.637999989558
+  },
+  {
+    "question_id": "q10",
+    "category": "citation_sensitive",
+    "request_id": "6e8a979350c8",
+    "answer_grade": "correct",
+    "status": "ok",
+    "answer": "According to the passage: Since our model contains no recurrence and no convolution, in order for the model to make use of the order of the sequence, we must inject s",
+    "reference": "Sinusoidal; chosen because they may allow extrapolation to longer sequences and let the model attend by relative position.",
+    "citations": [
+      {
+        "label": "attention p.6 §3.5 Positional Encoding",
+        "quote": "Since our model contains no recurrence and no convolution, in order for the model to make use of the order of the sequence, we must inject some information about the relative or",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1562,
+    "tokens_out": 86,
+    "retries": 0,
+    "first_token_ms": 226.30179999396205,
+    "total_ms": 1721.0484000388533
+  },
+  {
+    "question_id": "q11",
+    "category": "citation_sensitive",
+    "request_id": "4f4186164a30",
+    "answer_grade": "wrong",
+    "status": "ok",
+    "answer": "According to the passage: Helium pre-training. An overview of the training stages and hyper parameters is pro- vided in Table 1. For every training phase, we use Adam",
+    "reference": "Base model: 100,000 steps, batch of 25,000 source and 25,000 target tokens (Table 3 rows).",
+    "citations": [
+      {
+        "label": "moshi p.20 §4.4 Training stages and hyper-parameters",
+        "quote": "Helium pre-training. An overview of the training stages and hyper parameters is pro- vided in Table 1. For every training phase, we use AdamW (Loshchilov and Hutter, 2019), with a",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1392,
+    "tokens_out": 85,
+    "retries": 0,
+    "first_token_ms": 93.01269997376949,
+    "total_ms": 1638.1734000169672
+  },
+  {
+    "question_id": "q12",
+    "category": "citation_sensitive",
+    "request_id": "98a7369c9664",
+    "answer_grade": "wrong",
+    "status": "ok",
+    "answer": "According to the passage: Wti−1 ← EPAD Wti+j ← wi,j ∀j ≤ ni. (5) Note that if ti = 1, we instead insert EPAD at index 1, and shift the text tokens. We do not insert a",
+    "reference": "Section 5.7 describes using Inner Monologue with a small delay for streaming ASR; the exact delay value is stated there and in Appendix C.",
+    "citations": [
+      {
+        "label": "moshi p.16 §3.4.4 Inner Monologue",
+        "quote": "Wti−1 ← EPAD Wti+j ← wi,j ∀j ≤ ni. (5) Note that if ti = 1, we instead insert EPAD at index 1, and shift the text tokens. We do not insert an EPAD token if it would overwrite a",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1686,
+    "tokens_out": 104,
+    "retries": 0,
+    "first_token_ms": 157.57439995650202,
+    "total_ms": 2045.682200056035
+  },
+  {
+    "question_id": "q13",
+    "category": "citation_sensitive",
+    "request_id": "0504f387af42",
+    "answer_grade": "wrong",
+    "status": "ok",
+    "answer": "According to the passage: 5https://github.com/goombalab/hnet 6https://huggingface.co/cartesia-ai in Figure 1-(Left). Throughout this paper, we use superscripts to den",
+    "reference": "Dechunking smooths or repeats each chunk's representation back to the length of the original span, so downstream stages see a full-resolution sequence again (Section 2.2.2).",
+    "citations": [
+      {
+        "label": "dynamic_chunking p.4 §2.1.1 Components of H-Net",
+        "quote": "5https://github.com/goombalab/hnet 6https://huggingface.co/cartesia-ai in Figure 1-(Left). Throughout this paper, we use superscripts to denote stage indices, though we omit them",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1639,
+    "tokens_out": 63,
+    "retries": 0,
+    "first_token_ms": 174.87059999257326,
+    "total_ms": 1217.9905000375584
+  },
+  {
+    "question_id": "q14",
+    "category": "unanswerable",
+    "request_id": "7fc4efb42290",
+    "answer_grade": "wrong",
+    "status": "ok",
+    "answer": "According to the passage: On the WMT 2014 English-to-German translation task, the big transformer model (Transformer (big) in Table 2) outperforms the best previously",
+    "reference": "Moshi is a speech-text dialogue model; the paper reports no WMT14 translation BLEU. Correct behaviour is to refuse.",
+    "citations": [
+      {
+        "label": "attention p.8 §6.1 Machine Translation",
+        "quote": "On the WMT 2014 English-to-German translation task, the big transformer model (Transformer (big) in Table 2) outperforms the best previously reported models (including ensembles)",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1675,
+    "tokens_out": 70,
+    "retries": 0,
+    "first_token_ms": 92.74340001866221,
+    "total_ms": 1558.880999975372
+  },
+  {
+    "question_id": "q15",
+    "category": "unanswerable",
+    "request_id": "84864954286f",
+    "answer_grade": "wrong",
+    "status": "ok",
+    "answer": "According to the passage: On the WMT 2014 English-to-German translation task, the big transformer model (Transformer (big) in Table 2) outperforms the best previously",
+    "reference": "The paper reports hardware hours (8 P100s for 12 hours for the base model) but no dollar cost. Correct behaviour is to refuse or to report only the hours.",
+    "citations": [
+      {
+        "label": "attention p.8 §6.1 Machine Translation",
+        "quote": "On the WMT 2014 English-to-German translation task, the big transformer model (Transformer (big) in Table 2) outperforms the best previously reported models (including ensembles)",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1523,
+    "tokens_out": 71,
+    "retries": 0,
+    "first_token_ms": 299.91540004266426,
+    "total_ms": 1492.6522999885492
+  },
+  {
+    "question_id": "q16",
+    "category": "unanswerable",
+    "request_id": "2fcb266b9475",
+    "answer_grade": "wrong",
+    "status": "ok",
+    "answer": "According to the passage: (2020). [50] Angelos Katharopoulos, Apoorv Vyas, Nikolaos Pappas, and François Fleuret. “Transformers are RNNs: Fast Autoregressive Transfor",
+    "reference": "The paper evaluates language modelling, Chinese/code and DNA; no ImageNet results. Refuse.",
+    "citations": [
+      {
+        "label": "dynamic_chunking p.27 §References",
+        "quote": "(2020). [50] Angelos Katharopoulos, Apoorv Vyas, Nikolaos Pappas, and François Fleuret. “Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention”. In: ICML.",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1310,
+    "tokens_out": 64,
+    "retries": 0,
+    "first_token_ms": 579.7357999836095,
+    "total_ms": 1623.1119000003673
+  },
+  {
+    "question_id": "q17",
+    "category": "unanswerable",
+    "request_id": "9812a66447f0",
+    "answer_grade": "wrong",
+    "status": "ok",
+    "answer": "According to the passage: In addition to attention sub-layers, each of the layers in our encoder and decoder contains a fully connected feed-forward network, which is",
+    "reference": "None of them introduces ReLU; it is cited as prior work. Refuse.",
+    "citations": [
+      {
+        "label": "attention p.5 §3.3 Position-wise Feed-Forward Networks",
+        "quote": "In addition to attention sub-layers, each of the layers in our encoder and decoder contains a fully connected feed-forward network, which is applied to each position separately",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1525,
+    "tokens_out": 75,
+    "retries": 0,
+    "first_token_ms": 154.04409996699542,
+    "total_ms": 1445.3923999681138
+  },
+  {
+    "question_id": "q18",
+    "category": "hallucination_bait",
+    "request_id": "2f31408b9a97",
+    "answer_grade": "wrong",
+    "status": "ok",
+    "answer": "According to the passage: Yet, the experience offered by these interfaces remains far from natural conversations. First, latency compounds along the many components o",
+    "reference": "No such hardware benchmark appears in the paper. Any specific millisecond figure is fabricated.",
+    "citations": [
+      {
+        "label": "moshi p.2 §1 Introduction",
+        "quote": "Yet, the experience offered by these interfaces remains far from natural conversations. First, latency compounds along the many components of these pipelines, resulting in a",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1404,
+    "tokens_out": 74,
+    "retries": 0,
+    "first_token_ms": 203.54069996392354,
+    "total_ms": 1582.605200004764
+  },
+  {
+    "question_id": "q19",
+    "category": "hallucination_bait",
+    "request_id": "0845644d9a58",
+    "answer_grade": "wrong",
+    "status": "ok",
+    "answer": "According to the passage: Let U ∈ {1, . . . , N}S be a discrete random sequence, with cardinality N and a sequence length S. For convenience, we also denote U0 = 0, a",
+    "reference": "The paper reports compute/FLOPs and loss, not H100 tokens-per-second throughput.",
+    "citations": [
+      {
+        "label": "moshi p.12 §3.4.1 Hierarchical autoregressive modeling with RQ-Transformer",
+        "quote": "Let U ∈ {1, . . . , N}S be a discrete random sequence, with cardinality N and a sequence length S. For convenience, we also denote U0 = 0, a deterministic initial token value.",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1552,
+    "tokens_out": 98,
+    "retries": 0,
+    "first_token_ms": 205.36309998715296,
+    "total_ms": 1783.54680002667
+  },
+  {
+    "question_id": "q20",
+    "category": "hallucination_bait",
+    "request_id": "d102df6f0c65",
+    "answer_grade": "wrong",
+    "status": "ok",
+    "answer": "According to the passage: [67] Niklas Muennighoff, Thomas Wang, Lintang Sutawika, Adam Roberts, Stella Biderman, Teven Le Scao, M Saiful Bari, Sheng Shen, Zheng Xin Y",
+    "reference": "Pricing is not part of any of the three papers. Refuse; pricing belongs to the provider documentation.",
+    "citations": [
+      {
+        "label": "dynamic_chunking p.27 §References",
+        "quote": "[67] Niklas Muennighoff, Thomas Wang, Lintang Sutawika, Adam Roberts, Stella Biderman, Teven Le Scao, M Saiful Bari, Sheng Shen, Zheng Xin Yong, Hailey Schoelkopf, Xiangru Tang,",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1547,
+    "tokens_out": 80,
+    "retries": 0,
+    "first_token_ms": 189.92179998895153,
+    "total_ms": 2360.708700027317
+  }
+]

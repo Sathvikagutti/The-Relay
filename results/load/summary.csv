@@ -1,0 +1,6 @@
+scenario,wall_seconds,peak_waiting,peak_inflight,requests
+steady,196.41,1,1,14
+burst,15.06,1,11,30
+overload,44.79,1,8,45
+limit_halved,90.31,1,4,22
+daily_exhausted,11.0,1,1,12

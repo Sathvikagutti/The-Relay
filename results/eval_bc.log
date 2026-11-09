@@ -1,0 +1,4 @@
+setting B (stand-in): 20 questions  grades={'correct': 4, 'wrong': 16}  ttft_p50=168ms  total_p50=1647ms  tokens_out/answer=80
+  rows -> C:\Users\sathvika\.config\freebuff-desktop\local-projects\51f3a081-7048-49b9-a34c-bfa33946a2f4\results\eval\rows_B_stand-in.csv
+setting C (stand-in): 20 questions  grades={'correct': 5, 'wrong': 15}  ttft_p50=221ms  total_p50=1723ms  tokens_out/answer=81
+  rows -> C:\Users\sathvika\.config\freebuff-desktop\local-projects\51f3a081-7048-49b9-a34c-bfa33946a2f4\results\eval\rows_C_stand-in.csv

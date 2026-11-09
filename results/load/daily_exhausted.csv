@@ -1,0 +1,13 @@
+request_id,scenario,source,start_time,first_token_ms,total_ms,status,retries,tokens_in,tokens_out,retrieval_setting,answer_grade
+1550e48b3a07,daily_exhausted,stand-in,2026-11-09T11:46:30.782+00:00,,0.1,rate_limited,0,0,0,A,refused_wrongly
+15956dea46b5,daily_exhausted,stand-in,2026-11-09T11:46:31.798+00:00,,0.3,rate_limited,0,0,0,A,refused_wrongly
+3866a7c60fdf,daily_exhausted,stand-in,2026-11-09T11:46:32.785+00:00,,0.2,rate_limited,0,0,0,A,refused_wrongly
+8911d37533f7,daily_exhausted,stand-in,2026-11-09T11:46:33.795+00:00,,0.3,rate_limited,0,0,0,A,refused_wrongly
+a7970248d423,daily_exhausted,stand-in,2026-11-09T11:46:34.787+00:00,,0.2,rate_limited,0,0,0,A,refused_wrongly
+1cf340fea055,daily_exhausted,stand-in,2026-11-09T11:46:35.787+00:00,,0.2,rate_limited,0,0,0,A,refused_wrongly
+d7863e2609ff,daily_exhausted,stand-in,2026-11-09T11:46:36.796+00:00,,0.4,rate_limited,0,0,0,A,refused_wrongly
+05b7f70d6ab1,daily_exhausted,stand-in,2026-11-09T11:46:37.794+00:00,,0.1,rate_limited,0,0,0,A,refused_wrongly
+707ea987a6dd,daily_exhausted,stand-in,2026-11-09T11:46:38.787+00:00,,0.2,rate_limited,0,0,0,A,refused_wrongly
+e448a8b73329,daily_exhausted,stand-in,2026-11-09T11:46:39.799+00:00,,0.4,rate_limited,0,0,0,A,refused_wrongly
+a7cf48a27443,daily_exhausted,stand-in,2026-11-09T11:46:40.790+00:00,,0.1,rate_limited,0,0,0,A,refused_wrongly
+1f3c4bd75508,daily_exhausted,stand-in,2026-11-09T11:46:41.785+00:00,,0.1,rate_limited,0,0,0,A,refused_wrongly

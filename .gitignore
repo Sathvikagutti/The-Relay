@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+build/
+dist/
+
+# Secrets — never committed
+.env
+.env.*
+!.env.example
+
+# Reproducible artifacts (re-fetch / regenerate, don't commit)
+data/papers/*.pdf
+data/index/*
+!data/index/manifest.json
+results/raw/
+report/report.html
+
+# Tooling
+.freebuff/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.vscode/
+.DS_Store

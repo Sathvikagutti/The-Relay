@@ -1,0 +1,23 @@
+# Pinned to the versions this project was built and measured with.
+# Install:  python -m venv .venv  &&  .venv\Scripts\python -m pip install -r requirements.txt
+
+# --- corpus -----------------------------------------------------------------
+pypdf==7.0.0              # page-level text extraction; pure Python, BSD (PyMuPDF is AGPL)
+PyYAML==6.0.3             # config and question-set files
+
+# --- retrieval --------------------------------------------------------------
+rank-bm25==0.2.2          # lexical ranking; no model download, no GPU
+fastembed==0.9.1          # ONNX cross-encoder reranker; avoids a torch install
+numpy==2.5.4
+
+# --- models, transport, service --------------------------------------------
+httpx==0.28.1             # SSE streaming + rate-limit headers + exact TTFT control
+fastapi==0.162.2          # stand-in model service
+uvicorn==0.54.0
+pydantic==2.14.3
+pydantic-settings==2.16.2 # .env loading; keys stay out of YAML and logs
+
+# --- analysis & tests -------------------------------------------------------
+pandas==3.1.1            # tables recomputed from results.csv
+pytest==9.2.0
+pytest-asyncio==1.4.1.post1

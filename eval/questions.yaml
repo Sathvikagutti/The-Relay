@@ -1,0 +1,165 @@
+# 20 questions written for this assignment, in five buckets.
+#
+# `gold` is where the answer actually lives, as paper + page range + section. It is
+# used two ways:
+#   1. automatic check - did the system cite a passage from that region?
+#   2. human grading      - the `reference` answer is what a person compares against.
+# Gold is deliberately a *region*, not a chunk id, because chunk ids depend on the
+# chunk size and the three retrieval settings must be comparable.
+#
+# Page numbers refer to the pinned arXiv PDFs fetched by `relay fetch-corpus`.
+
+- id: q01
+  category: clear
+  question: "In scaled dot-product attention, what is the dimension of the key vectors, and how is dk set for each head in the base model?"
+  answerable: true
+  gold:
+    - {paper: attention, pages: [4, 5], section: "3.2"}
+  reference: "Keys (and values) have dimension dk; each head uses dk = dv = dmodel/h = 64 with h = 8."
+
+- id: q02
+  category: clear
+  question: "How many attention heads does the base Transformer use, and what is the dimension of each head?"
+  answerable: true
+  gold:
+    - {paper: attention, pages: [5, 5], section: "3.2.2"}
+  reference: "h = 8 heads, dk = dv = dmodel/h = 64."
+
+- id: q03
+  category: clear
+  question: "What learning-rate schedule and how many warmup steps does the Transformer training use?"
+  answerable: true
+  gold:
+    - {paper: attention, pages: [7, 7], section: "5.3"}
+  reference: "Adam with beta1=0.9, beta2=0.98, eps=1e-9; lrate = d_model^-0.5 * min(step^-0.5, step * warmup^-1.5), warmup_steps = 4000."
+
+- id: q04
+  category: clear
+  question: "What is Inner Monologue in Moshi, and what does it predict before the audio tokens?"
+  answerable: true
+  gold:
+    - {paper: moshi, pages: [15, 16], section: "3.4.4"}
+  reference: "A text token stream produced by Moshi itself, aligned with the audio, predicted as a prefix to the audio tokens; it improves generation quality and enables streaming ASR/TTS."
+
+- id: q05
+  category: clear
+  question: "What is the ratio loss in Dynamic Chunking, and what behaviour does it encourage?"
+  answerable: true
+  gold:
+    - {paper: dynamic_chunking, pages: [8, 8], section: "2.2.3"}
+  reference: "A regulariser on the routing/boundary probabilities that pushes the achieved compression ratio toward the target ratio, preventing trivial solutions (compress nothing or compress everything)."
+
+- id: q06
+  category: multi_passage
+  question: "Which of these papers reports streaming speech recognition, and what word error rate does it report on LibriSpeech test-clean?"
+  answerable: true
+  gold:
+    - {paper: moshi, pages: [30, 32], section: "5.7"}
+  reference: "Moshi reports streaming ASR via Inner Monologue in Section 5.7, with WER on LibriSpeech test-clean in its streaming ASR table."
+
+- id: q07
+  category: multi_passage
+  question: "How do the Transformer and H-Net each reduce the work needed to model long sequences, and how do the two approaches differ?"
+  answerable: true
+  gold:
+    - {paper: attention, pages: [6, 7], section: "4"}
+    - {paper: dynamic_chunking, pages: [4, 9], section: "2"}
+  reference: "The Transformer replaces recurrence with self-attention so positions are computed in parallel (Section 4 compares complexity per layer); H-Net instead learns data-dependent chunk boundaries and processes coarser stages at lower resolution."
+
+- id: q08
+  category: multi_passage
+  question: "What two main components does Moshi combine, and what does each contribute?"
+  answerable: true
+  gold:
+    - {paper: moshi, pages: [6, 11], section: "3"}
+    - {paper: moshi, pages: [9, 11], section: "3.3"}
+  reference: "Helium, a text language model, and Mimi, a neural audio codec producing semantic-acoustic tokens; a smaller Transformer models the audio tokens hierarchically."
+
+- id: q09
+  category: multi_passage
+  question: "How is a chunk boundary decided in Dynamic Chunking, and which loss trains that decision?"
+  answerable: true
+  gold:
+    - {paper: dynamic_chunking, pages: [6, 8], section: "2.2"}
+  reference: "A routing module emits boundary probabilities from similarity/downsampling scores (Section 2.2.1), and the ratio loss plus the language-modelling loss train it (Section 2.2.3)."
+
+- id: q10
+  category: citation_sensitive
+  question: "Does the Transformer use sinusoidal or learned positional encodings, and why?"
+  answerable: true
+  gold:
+    - {paper: attention, pages: [6, 6], section: "3.5"}
+  reference: "Sinusoidal; chosen because they may allow extrapolation to longer sequences and let the model attend by relative position."
+
+- id: q11
+  category: citation_sensitive
+  question: "What batch size and how many training steps are used for the base Transformer model?"
+  answerable: true
+  gold:
+    - {paper: attention, pages: [7, 7], section: "5.1"}
+  reference: "Base model: 100,000 steps, batch of 25,000 source and 25,000 target tokens (Table 3 rows)."
+
+- id: q12
+  category: citation_sensitive
+  question: "What delay does Moshi use between text and audio tokens to run streaming speech recognition?"
+  answerable: true
+  gold:
+    - {paper: moshi, pages: [30, 32], section: "5.7"}
+  reference: "Section 5.7 describes using Inner Monologue with a small delay for streaming ASR; the exact delay value is stated there and in Appendix C."
+
+- id: q13
+  category: citation_sensitive
+  question: "What does the dechunking layer do, and how does it restore the original sequence length?"
+  answerable: true
+  gold:
+    - {paper: dynamic_chunking, pages: [6, 8], section: "2.2.2"}
+  reference: "Dechunking smooths or repeats each chunk's representation back to the length of the original span, so downstream stages see a full-resolution sequence again (Section 2.2.2)."
+
+- id: q14
+  category: unanswerable
+  question: "What BLEU score does Moshi achieve on WMT14 English-to-German translation?"
+  answerable: false
+  gold: []
+  reference: "Moshi is a speech-text dialogue model; the paper reports no WMT14 translation BLEU. Correct behaviour is to refuse."
+
+- id: q15
+  category: unanswerable
+  question: "What was the dollar cost of training the base Transformer model?"
+  answerable: false
+  gold: []
+  reference: "The paper reports hardware hours (8 P100s for 12 hours for the base model) but no dollar cost. Correct behaviour is to refuse or to report only the hours."
+
+- id: q16
+  category: unanswerable
+  question: "How does Dynamic Chunking perform on ImageNet image classification?"
+  answerable: false
+  gold: []
+  reference: "The paper evaluates language modelling, Chinese/code and DNA; no ImageNet results. Refuse."
+
+- id: q17
+  category: unanswerable
+  question: "Which of these three papers introduces the ReLU activation function?"
+  answerable: false
+  gold: []
+  reference: "None of them introduces ReLU; it is cited as prior work. Refuse."
+
+- id: q18
+  category: hallucination_bait
+  question: "What is Moshi's p95 inference latency in milliseconds on an M3 MacBook Pro?"
+  answerable: false
+  gold: []
+  reference: "No such hardware benchmark appears in the paper. Any specific millisecond figure is fabricated."
+
+- id: q19
+  category: hallucination_bait
+  question: "How many tokens per second does the H-Net Large model generate on a single H100 GPU?"
+  answerable: false
+  gold: []
+  reference: "The paper reports compute/FLOPs and loss, not H100 tokens-per-second throughput."
+
+- id: q20
+  category: hallucination_bait
+  question: "What is the exact per-million-token price Groq charged for these models when the papers were written?"
+  answerable: false
+  gold: []
+  reference: "Pricing is not part of any of the three papers. Refuse; pricing belongs to the provider documentation."

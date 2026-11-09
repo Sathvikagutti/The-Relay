@@ -1,0 +1,23 @@
+# The corpus is pinned to exact arXiv versions: the assignment grades citation
+# correctness against these, and a different version can move a result between
+# pages or drop it entirely.
+
+corpus:
+  dir: data/papers
+  index_dir: data/index
+
+  papers:
+    - key: attention
+      arxiv_id: "1706.03762"
+      version: 7
+      title: "Attention Is All You Need"
+
+    - key: moshi
+      arxiv_id: "2410.00037"
+      version: 1
+      title: "Moshi: a speech-text foundation model for real-time dialogue"
+
+    - key: dynamic_chunking
+      arxiv_id: "2507.07955"
+      version: 2
+      title: "Dynamic Chunking for End-to-End Hierarchical Sequence Modeling"

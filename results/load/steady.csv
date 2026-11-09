@@ -1,0 +1,15 @@
+request_id,scenario,source,start_time,first_token_ms,total_ms,status,retries,tokens_in,tokens_out,retrieval_setting,answer_grade
+ed0208f1886c,steady,stand-in,2026-11-09T11:40:42.394+00:00,354.8,2034.6,ok,0,848,91,A,correct
+f79d92967c3a,steady,stand-in,2026-11-09T11:40:57.401+00:00,80.3,1942.2,ok,0,773,103,A,correct
+80693ad79665,steady,stand-in,2026-11-09T11:41:12.405+00:00,223.1,2219.3,ok,0,827,83,A,wrong
+ebb38d39f680,steady,stand-in,2026-11-09T11:41:27.398+00:00,268.6,1835.1,ok,0,875,84,A,wrong
+8832f5193882,steady,stand-in,2026-11-09T11:41:42.407+00:00,183.1,1603.1,ok,0,971,77,A,correct
+83cbc931b44b,steady,stand-in,2026-11-09T11:41:57.404+00:00,200.9,1200.6,ok,0,881,64,A,correct
+78032401371a,steady,stand-in,2026-11-09T11:42:12.404+00:00,256.7,1033.4,ok,0,896,49,A,wrong
+f0e03b2e68e2,steady,stand-in,2026-11-09T11:42:27.403+00:00,429.9,1210.1,ok,0,698,49,A,wrong
+ad22159ccd66,steady,stand-in,2026-11-09T11:42:42.397+00:00,294.2,1216.4,ok,0,804,58,A,wrong
+4deebd72496f,steady,stand-in,2026-11-09T11:42:57.402+00:00,167.6,1271.5,ok,0,769,70,A,correct
+afb7821bab6e,steady,stand-in,2026-11-09T11:43:12.394+00:00,170.4,1595.9,ok,0,1047,85,A,wrong
+13ec3b4780d0,steady,stand-in,2026-11-09T11:43:27.403+00:00,64.3,1862.6,ok,0,1049,104,A,wrong
+1015f41fca64,steady,stand-in,2026-11-09T11:43:42.406+00:00,95.8,1267.4,ok,0,1043,63,A,wrong
+2aa0a635d735,steady,stand-in,2026-11-09T11:43:57.406+00:00,81.3,1391.4,ok,0,1030,70,A,wrong

@@ -1,0 +1,29 @@
+# Three settings compared in Table 3. They differ in piece size, how many pieces
+# are fetched, and whether a cross-encoder re-ranks before the context budget is
+# spent. `top_k` is what reaches the model; `fetch_k` is what ranking looks at.
+#
+# Why these three: A is the cheap default that fits ~4 pieces in a 1.4k-token
+# budget; B tests whether longer pieces answer multi-passage questions better;
+# C tests whether re-ranking can buy precision without buying tokens.
+
+settings:
+  A:
+    chunk_tokens: 350
+    overlap_tokens: 60
+    fetch_k: 4
+    top_k: 4
+    rerank: none
+  B:
+    chunk_tokens: 700
+    overlap_tokens: 100
+    fetch_k: 4
+    top_k: 4
+    rerank: none
+  C:
+    chunk_tokens: 350
+    overlap_tokens: 60
+    fetch_k: 16
+    top_k: 4
+    rerank: cross_encoder
+
+default: A
