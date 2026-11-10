@@ -144,7 +144,7 @@ class Relay:
                     )
                     if can_wait:
                         waits += 1
-                        trace.queued_ms += wait_ms
+                        trace.limit_wait_ms += wait_ms
                         trace.notes["limit_waits"] = waits
                         await asyncio.sleep(exc.retry_after_s)
                         continue
@@ -297,9 +297,13 @@ class Relay:
                     retry_after_s=exc.retry_after_s,
                 )
 
+            acquire_started = time.perf_counter()
             reservation = await self.limiter.acquire(
                 est_tokens, deadline_s=remaining_ms / 1000
             )
+            # Budget waiting is its own bucket: without this the 50 s request in the
+            # half-limits run looked like it spent 49 s nowhere at all.
+            trace.limit_wait_ms += (time.perf_counter() - acquire_started) * 1000
             started = time.perf_counter()
             result = await self.provider.chat(
                 ChatRequest(

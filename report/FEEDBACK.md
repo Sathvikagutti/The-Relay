@@ -1,8 +1,9 @@
 # Feedback on Vaani
 
-Draft. Written after reading vaani.dev (9 Nov 2026). Replace or edit the personal
-impressions before submitting - the factual points below are checkable against the site,
-the opinions should be in your voice.
+Draft. Factual points re-checked against the live site on 10 Nov 2026 (`vaani.dev`,
+`vaani.dev/pricing`, `vaani.dev/platform`); edit the opinions into your own voice before
+submitting. No live call or interview was run, so anything about call quality here is
+untested by me and marked as such.
 
 ## What is strong
 
@@ -30,9 +31,11 @@ the opinions should be in your voice.
   snippet on the landing page; the path from "interested" to "first call made" runs
   through a separate docs domain and an app signup. A curl example next to the latency
   claim would shorten that.
-* **The free tier is invisible.** "Start free" does not say what free means (minutes?
-  concurrent calls? agents?). That is the first question a developer asks, and a pricing
-  table is linked but not summarised.
+* **"Start free" does not lead to a free plan.** The hero CTA reads "Start free on
+  Vaani's Platform", but `/pricing` lists only pay-as-you-go (prepaid wallet, ₹1/min
+  platform fee, 2 concurrent calls, ₹600/month for a number) and Enterprise. A reader
+  who clicks expecting a free allowance finds a wallet top-up instead. Either name the
+  allowance or change the CTA.
 * **Language claim vs evidence.** "Auto-switch to your language and dialect" is a strong
   claim for Indian telephony; a short before/after audio sample would be more convincing
   than the sentence.

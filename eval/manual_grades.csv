@@ -1,61 +1,61 @@
-request_id,setting,auto_grade,final_grade,notes
-cf7ca77dec9b,A,correct,,review against eval/questions.yaml reference
-873840dc7d89,A,correct,,review against eval/questions.yaml reference
-4aa2a0c245e6,A,wrong,,review against eval/questions.yaml reference
-c4a89f7e3be7,A,wrong,,review against eval/questions.yaml reference
-a334f04d12ae,A,correct,,review against eval/questions.yaml reference
-36e12b2d52b2,A,correct,,review against eval/questions.yaml reference
-21badb0a605f,A,wrong,,review against eval/questions.yaml reference
-0b266fa08ca6,A,wrong,,review against eval/questions.yaml reference
-73a6e4084b0c,A,wrong,,review against eval/questions.yaml reference
-6e8a979350c8,A,correct,,review against eval/questions.yaml reference
-4f4186164a30,A,wrong,,review against eval/questions.yaml reference
-98a7369c9664,A,wrong,,review against eval/questions.yaml reference
-0504f387af42,A,wrong,,review against eval/questions.yaml reference
-7fc4efb42290,A,wrong,,review against eval/questions.yaml reference
-84864954286f,A,wrong,,review against eval/questions.yaml reference
-2fcb266b9475,A,wrong,,review against eval/questions.yaml reference
-9812a66447f0,A,wrong,,review against eval/questions.yaml reference
-2f31408b9a97,A,wrong,,review against eval/questions.yaml reference
-0845644d9a58,A,wrong,,review against eval/questions.yaml reference
-d102df6f0c65,A,wrong,,review against eval/questions.yaml reference
-fb3533fd5c20,B,correct,,review against eval/questions.yaml reference
-9ce43e8b3878,B,wrong,,review against eval/questions.yaml reference
-0e9ef675306e,B,wrong,,review against eval/questions.yaml reference
-29fd321ec0b2,B,wrong,,review against eval/questions.yaml reference
-ef8ca1c6d145,B,correct,,review against eval/questions.yaml reference
-da234540c7dc,B,correct,,review against eval/questions.yaml reference
-22d3e23d3d09,B,wrong,,review against eval/questions.yaml reference
-e4a24fc1e6eb,B,wrong,,review against eval/questions.yaml reference
-05165100520b,B,wrong,,review against eval/questions.yaml reference
-7a8768587cc5,B,correct,,review against eval/questions.yaml reference
-d32f2afde245,B,wrong,,review against eval/questions.yaml reference
-33aa63cb69f2,B,wrong,,review against eval/questions.yaml reference
-87a2198d905f,B,wrong,,review against eval/questions.yaml reference
-651f7759ae04,B,wrong,,review against eval/questions.yaml reference
-d8ca01fe2aaf,B,wrong,,review against eval/questions.yaml reference
-a0eeac76f1ac,B,wrong,,review against eval/questions.yaml reference
-1078742b5b7c,B,wrong,,review against eval/questions.yaml reference
-e9460d2ea1be,B,wrong,,review against eval/questions.yaml reference
-29090b9afb89,B,wrong,,review against eval/questions.yaml reference
-26fbf238aa71,B,wrong,,review against eval/questions.yaml reference
-82731dd26692,C,correct,,review against eval/questions.yaml reference
-d9e290806671,C,correct,,review against eval/questions.yaml reference
-64fa1ab770bc,C,wrong,,review against eval/questions.yaml reference
-16fa193bdb34,C,wrong,,review against eval/questions.yaml reference
-3a955db9d093,C,correct,,review against eval/questions.yaml reference
-5219a850c51b,C,correct,,review against eval/questions.yaml reference
-71a4b56aa54d,C,wrong,,review against eval/questions.yaml reference
-8803e8657813,C,wrong,,review against eval/questions.yaml reference
-bc601991c248,C,wrong,,review against eval/questions.yaml reference
-42bb7586cbe8,C,correct,,review against eval/questions.yaml reference
-e9eb2932a111,C,wrong,,review against eval/questions.yaml reference
-2d364394951d,C,wrong,,review against eval/questions.yaml reference
-617aa05414ef,C,wrong,,review against eval/questions.yaml reference
-db1ae28d6db9,C,wrong,,review against eval/questions.yaml reference
-7b75270be49d,C,wrong,,review against eval/questions.yaml reference
-fffd9bc56017,C,wrong,,review against eval/questions.yaml reference
-76b237478ed5,C,wrong,,review against eval/questions.yaml reference
-7f1cdf5261ba,C,wrong,,review against eval/questions.yaml reference
-b7fcaae1e869,C,wrong,,review against eval/questions.yaml reference
-c65200feba68,C,wrong,,review against eval/questions.yaml reference
+request_id,setting,question_id,category,answerable,auto_grade,final_grade,evidence_support,citation_correct,abstention_correct,notes
+cf7ca77dec9b,A,q01,clear,yes,correct,,,,,
+873840dc7d89,A,q02,clear,yes,correct,,,,,
+4aa2a0c245e6,A,q03,clear,yes,wrong,,,,,
+c4a89f7e3be7,A,q04,clear,yes,wrong,,,,,
+a334f04d12ae,A,q05,clear,yes,correct,,,,,
+36e12b2d52b2,A,q06,multi_passage,yes,correct,,,,,
+21badb0a605f,A,q07,multi_passage,yes,wrong,,,,,
+0b266fa08ca6,A,q08,multi_passage,yes,wrong,,,,,
+73a6e4084b0c,A,q09,multi_passage,yes,wrong,,,,,
+6e8a979350c8,A,q10,citation_sensitive,yes,correct,,,,,
+4f4186164a30,A,q11,citation_sensitive,yes,wrong,,,,,
+98a7369c9664,A,q12,citation_sensitive,yes,wrong,,,,,
+0504f387af42,A,q13,citation_sensitive,yes,wrong,,,,,
+7fc4efb42290,A,q14,unanswerable,no,wrong,,,,,
+84864954286f,A,q15,unanswerable,no,wrong,,,,,
+2fcb266b9475,A,q16,unanswerable,no,wrong,,,,,
+9812a66447f0,A,q17,unanswerable,no,wrong,,,,,
+2f31408b9a97,A,q18,hallucination_bait,no,wrong,,,,,
+0845644d9a58,A,q19,hallucination_bait,no,wrong,,,,,
+d102df6f0c65,A,q20,hallucination_bait,no,wrong,,,,,
+fb3533fd5c20,B,q01,clear,yes,correct,,,,,
+9ce43e8b3878,B,q02,clear,yes,wrong,,,,,
+0e9ef675306e,B,q03,clear,yes,wrong,,,,,
+29fd321ec0b2,B,q04,clear,yes,wrong,,,,,
+ef8ca1c6d145,B,q05,clear,yes,correct,,,,,
+da234540c7dc,B,q06,multi_passage,yes,correct,,,,,
+22d3e23d3d09,B,q07,multi_passage,yes,wrong,,,,,
+e4a24fc1e6eb,B,q08,multi_passage,yes,wrong,,,,,
+05165100520b,B,q09,multi_passage,yes,wrong,,,,,
+7a8768587cc5,B,q10,citation_sensitive,yes,correct,,,,,
+d32f2afde245,B,q11,citation_sensitive,yes,wrong,,,,,
+33aa63cb69f2,B,q12,citation_sensitive,yes,wrong,,,,,
+87a2198d905f,B,q13,citation_sensitive,yes,wrong,,,,,
+651f7759ae04,B,q14,unanswerable,no,wrong,,,,,
+d8ca01fe2aaf,B,q15,unanswerable,no,wrong,,,,,
+a0eeac76f1ac,B,q16,unanswerable,no,wrong,,,,,
+1078742b5b7c,B,q17,unanswerable,no,wrong,,,,,
+e9460d2ea1be,B,q18,hallucination_bait,no,wrong,,,,,
+29090b9afb89,B,q19,hallucination_bait,no,wrong,,,,,
+26fbf238aa71,B,q20,hallucination_bait,no,wrong,,,,,
+82731dd26692,C,q01,clear,yes,correct,,,,,
+d9e290806671,C,q02,clear,yes,correct,,,,,
+64fa1ab770bc,C,q03,clear,yes,wrong,,,,,
+16fa193bdb34,C,q04,clear,yes,wrong,,,,,
+3a955db9d093,C,q05,clear,yes,correct,,,,,
+5219a850c51b,C,q06,multi_passage,yes,correct,,,,,
+71a4b56aa54d,C,q07,multi_passage,yes,wrong,,,,,
+8803e8657813,C,q08,multi_passage,yes,wrong,,,,,
+bc601991c248,C,q09,multi_passage,yes,wrong,,,,,
+42bb7586cbe8,C,q10,citation_sensitive,yes,correct,,,,,
+e9eb2932a111,C,q11,citation_sensitive,yes,wrong,,,,,
+2d364394951d,C,q12,citation_sensitive,yes,wrong,,,,,
+617aa05414ef,C,q13,citation_sensitive,yes,wrong,,,,,
+db1ae28d6db9,C,q14,unanswerable,no,wrong,,,,,
+7b75270be49d,C,q15,unanswerable,no,wrong,,,,,
+fffd9bc56017,C,q16,unanswerable,no,wrong,,,,,
+76b237478ed5,C,q17,unanswerable,no,wrong,,,,,
+7f1cdf5261ba,C,q18,hallucination_bait,no,wrong,,,,,
+b7fcaae1e869,C,q19,hallucination_bait,no,wrong,,,,,
+c65200feba68,C,q20,hallucination_bait,no,wrong,,,,,

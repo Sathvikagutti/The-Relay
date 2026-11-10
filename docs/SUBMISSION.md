@@ -18,7 +18,7 @@ Anything pending is marked **PENDING**, never quietly omitted.
 | No unsupported answer sent to look fast | done, measured | latency includes verification; failures are recorded as failures |
 | Real Groq free-tier calls, modest | **PENDING key** (nothing invented) | `relay probe-limits`, `relay calibrate`, `relay eval --source real` |
 | Calibrated stand-in for heavy load | code done, params **PENDING key** | `services/standin/`, `relay calibrate` |
-| State where stand-in differs least/most | done (template), numbers pending | `services/standin/params.json` `differences` |
+| State where stand-in differs least/most | done in prose; `params.json` absent until `relay calibrate` runs | `services/standin/params.json` (written by calibrate), report §2 |
 | 5 load scenarios | done (stand-in) | `relay load`, `results/load/*.csv` |
 | Per-minute limit halved scenario | done | `limit_halved` scenario |
 | Daily budget exhausted scenario | done | `daily_exhausted` scenario |
@@ -28,7 +28,7 @@ Anything pending is marked **PENDING**, never quietly omitted.
 | Every table number recomputable from the CSV | done | `relay tables` reads only the CSV (+ `limits.json` for Table 1) |
 | >= 15 self-written questions, 5 buckets | done | `eval/questions.yaml` (20) |
 | Explicit grading rules | done | `docs/GRADING.md` |
-| Manual verification of answers | **PENDING** | `eval/review.csv` + `eval/manual_grades.csv` |
+| Manual verification of answers | **PENDING (author's judgement)** | `eval/manual_grades.csv` + `eval/review_sheet.md` via `relay review-sheet` |
 | No LLM-as-judge | done | mechanical quote/gold checks only |
 | 2-page report, headings 1-8 in order | done (stand-in numbers) | `report/REPORT.pdf` (2 pages, heading check passes) |
 | Extra sections after heading 5 | done in draft | Retrieval quality vs cost; How the library misleads a naive retriever |

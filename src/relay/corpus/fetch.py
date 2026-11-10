@@ -19,7 +19,7 @@ from pathlib import Path
 import httpx
 from pypdf import PdfReader
 
-from relay.config import PaperSpec, RelayConfig, resolve
+from relay.config import PROJECT_ROOT, PaperSpec, RelayConfig, resolve
 
 MANIFEST_NAME = "manifest.json"
 USER_AGENT = "the-relay-assignment/0.1 (corpus fetch; educational use)"
@@ -60,6 +60,19 @@ def parse_version_marker(text: str) -> tuple[str, int] | None:
     if not match:
         return None
     return match.group("arxiv_id"), int(match.group("version"))
+
+
+def portable(path: Path) -> str:
+    """Project-relative POSIX path, so the manifest survives being moved or zipped.
+
+    Absolute paths leaked this project's own folder name into a submission file;
+    a relative path is also the only form that works when the reviewer unpacks the
+    archive somewhere else.
+    """
+    try:
+        return path.resolve().relative_to(PROJECT_ROOT).as_posix()
+    except ValueError:
+        return path.as_posix()
 
 
 def sha256_of(path: Path) -> str:
@@ -108,7 +121,7 @@ def inspect(spec: PaperSpec, path: Path, *, fetched_at: str) -> PaperRecord:
         version=spec.version,
         title=spec.title,
         url=spec.url,
-        path=str(path),
+        path=portable(path),
         sha256=sha256_of(path),
         size_bytes=path.stat().st_size,
         pages=len(reader.pages),

@@ -42,8 +42,9 @@ relay ask "How does the decoder attend to the encoder output?" --source stand-in
 | `relay probe-limits` | ~45 real requests to measure RPM/TPM, 429 shape, recovery and TTFT |
 | `relay calibrate` | Fit the stand-in's latency parameters from those measurements |
 | `relay eval --settings A B C` | Run the 20-question set; writes graded rows per setting |
-| `relay load` | Five load scenarios: steady, burst, overload, limit halved, daily exhausted |
+| `relay load` | Eight load scenarios: steady, burst, overload, sustained (4 min), faulty, degraded, limit halved, daily exhausted |
 | `relay combine` | Merge every row file into `results/results.csv` |
+| `relay review-sheet` | Write `eval/manual_grades.csv` (60 rows, blank judgement columns) and `eval/review_sheet.md` |
 | `relay tables` | Regenerate the report tables from that CSV |
 
 ## The pipeline
@@ -74,18 +75,21 @@ src/relay/
   obs/          trace events, CSV writer/reader, table generation
   experiments/  probe, calibrate, eval, load
 services/standin/  OpenAI-compatible SSE server with the documented free-tier counters
-eval/              20 questions in 5 buckets, gold regions, review scaffold
-results/           results.csv, raw traces, limits.json, per-scenario rows
+eval/              20 questions in 5 buckets, gold regions, manual grade sheet
+results/           results.csv, raw traces, per-scenario rows, load summary
+                   (limits.json appears only after `relay probe-limits` runs)
 report/            2-page report and its tables
-docs/              plan, decisions, grading, checklist, interview notes
+docs/              plan, decisions, grading, checklist, audit, analysis, interview notes,
+                   conversation record
 ```
 
 ## Results
 
 Everything numeric lives in `results/results.csv` (one row per request, exact columns
 required by the brief) and `report/TABLES.md` (regenerated with `relay tables`, never
-typed by hand). `results/limits.json` holds the measured service limits, if the probe has
-been run.
+typed by hand). `results/limits.json` does not exist in this submission: it is written by
+`relay probe-limits`, which needs `GROQ_API_KEY`. Until then Table 1 reports the documented
+values with `not measured` in the observed column, and says so.
 
 ## What this does not do
 
@@ -101,4 +105,5 @@ failure mode.
 * Automatic grading checks citation location, not answer correctness. Table 3 therefore
   uses reviewed grades where they exist and says so when they do not.
 * The stand-in cannot reproduce cold starts or prefill scaling; the differences are listed
-  in `services/standin/params.json`.
+  in its calibration metadata, `services/standin/params.json`, which `relay calibrate`
+  writes. That file does not exist yet, and the stand-in reports `calibrated: false`.

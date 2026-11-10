@@ -44,6 +44,9 @@ class Trace:
     start_time: str = field(default_factory=utc_now_iso)
     start_perf: float = field(default_factory=time.perf_counter)
     queued_ms: float = 0.0
+    # Time blocked inside the token limiter, waiting for budget to free up. It is
+    # neither queueing nor work, and leaving it out once hid 49 s of a 50 s request.
+    limit_wait_ms: float = 0.0
     working_ms: float = 0.0
     retrying_ms: float = 0.0
     backoff_ms: float = 0.0
@@ -69,6 +72,8 @@ class Trace:
             "question": self.question,
             "start_time": self.start_time,
             "queued_ms": round(self.queued_ms, 1),
+            "limit_wait_ms": round(self.limit_wait_ms, 1),
+            "waiting_ms": round(self.queued_ms + self.limit_wait_ms, 1),
             "working_ms": round(self.working_ms, 1),
             "retrying_ms": round(self.retrying_ms, 1),
             "backoff_ms": round(self.backoff_ms, 1),

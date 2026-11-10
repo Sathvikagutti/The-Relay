@@ -202,6 +202,14 @@ def cmd_load(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_review(args: argparse.Namespace) -> int:
+    from relay.experiments.review import build
+
+    rows, _lines = build(source=args.source, settings=tuple(args.settings))
+    print(f"{rows} grading rows -> eval/manual_grades.csv and eval/review_sheet.md")
+    return 0 if rows else 1
+
+
 def cmd_combine(args: argparse.Namespace) -> int:
     from relay.obs.csvio import write_results
     from relay.obs.metrics import read_rows
@@ -296,13 +304,27 @@ def build_parser() -> argparse.ArgumentParser:
     ld.add_argument(
         "--scenarios",
         nargs="*",
-        default=["steady", "burst", "overload", "limit_halved", "daily_exhausted"],
+        default=[
+            "steady",
+            "burst",
+            "overload",
+            "sustained",
+            "faulty",
+            "degraded",
+            "limit_halved",
+            "daily_exhausted",
+        ],
     )
     ld.add_argument("--source", choices=["stand-in", "real"], default="stand-in")
     ld.set_defaults(func=cmd_load)
 
     cb = sub.add_parser("combine", help="merge row files into results/results.csv")
     cb.set_defaults(func=cmd_combine)
+
+    rs = sub.add_parser("review-sheet", help="build eval/manual_grades.csv + review_sheet.md")
+    rs.add_argument("--source", choices=["stand-in", "real"], default="stand-in")
+    rs.add_argument("--settings", nargs="*", default=["A", "B", "C"])
+    rs.set_defaults(func=cmd_review)
 
     tb = sub.add_parser("tables", help="regenerate report tables from results.csv")
     tb.add_argument("--write", action="store_true", help="write report/TABLES.md")

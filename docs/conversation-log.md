@@ -47,7 +47,8 @@ and `docs/DECISIONS.md`.
 * The real Groq key was not in `.env` for most of the build, so the probe, the real eval
   and the real load run are scripted but **not yet measured**. The report labels those
   cells `not measured` rather than filling them with stand-in numbers.
-* Manual grading of the 20 questions is prepared (`eval/review.csv` scaffold) but not
-  signed off. Table 3 says which grades are reviewed and which are mechanical.
+* Manual grading of the 20 questions is prepared (`eval/manual_grades.csv`, one row per
+  evaluation request with an empty `final_grade`) but not signed off. Table 3 says which
+  grades are reviewed and which are mechanical.
 * Bucket C (multi-paper synthesis) is the weakest area; the pipeline does not require a
   multi-paper answer to cite more than one paper.

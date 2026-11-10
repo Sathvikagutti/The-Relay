@@ -40,6 +40,9 @@ class Scenario:
     server: dict[str, str] = field(default_factory=lambda: dict(SERVER_DOCUMENTED))
     force_day_exhausted: bool = False
     top_k: int = 2  # lean context: these runs measure the scheduler, not retrieval quality
+    # Charge the limiter before the first request so the degradation ladder is
+    # exercised by traffic rather than by a unit test alone.
+    prefill_tokens: int = 0
 
 
 def _halved() -> LimiterLimits:
@@ -60,6 +63,36 @@ SCENARIOS: dict[str, Scenario] = {
     "overload": Scenario("overload", count=45, rate_per_min=60, concurrency=8, limits=DOCUMENTED_LIMITS),
     # The scenario most people forget: limits change under you.
     "limit_halved": Scenario("limit_halved", count=22, rate_per_min=25, concurrency=4, limits=_halved()),
+    # Sustained overload: twice the documented request rate, held for four minutes.
+    # The earlier 45-second run could not show whether the system degrades or recovers.
+    "sustained": Scenario(
+        "sustained", count=240, rate_per_min=60, concurrency=8, limits=DOCUMENTED_LIMITS
+    ),
+    # Faults other than 429: server errors, timeouts and truncated streams.
+    # Synthetic and labelled as such; the real fault rate can only come from the probe.
+    "faulty": Scenario(
+        "faulty",
+        count=40,
+        rate_per_min=30,
+        concurrency=4,
+        limits=DOCUMENTED_LIMITS,
+        server={
+            **SERVER_DOCUMENTED,
+            "fail": "0.15",
+            "timeout": "0.05",
+            "partial": "0.10",
+        },
+    ),
+    # Graceful degradation: the minute budget starts 65% spent, so the ladder has to
+    # drop the analysis call and then trim context instead of failing outright.
+    "degraded": Scenario(
+        "degraded",
+        count=30,
+        rate_per_min=12,
+        concurrency=4,
+        limits=DOCUMENTED_LIMITS,
+        prefill_tokens=5_200,
+    ),
     # Day budget gone: no amount of waiting inside the request helps.
     "daily_exhausted": Scenario(
         "daily_exhausted",
@@ -87,6 +120,8 @@ class ScenarioResult:
     wall_seconds: float
     peak_waiting: int
     peak_inflight: int
+    source: str = "stand-in"
+    offered_per_min: float = 0.0
 
 
 async def run_scenario(scenario: Scenario, *, source: str) -> ScenarioResult:
@@ -109,6 +144,9 @@ async def run_scenario(scenario: Scenario, *, source: str) -> ScenarioResult:
     relay.extra_query = dict(scenario.server)
     if scenario.force_day_exhausted:
         runtime.limiter.force_exhaust_day()
+    if scenario.prefill_tokens:
+        reservation = await runtime.limiter.acquire(scenario.prefill_tokens, deadline_s=5.0)
+        await runtime.limiter.reconcile(reservation, scenario.prefill_tokens)
 
     questions = load_questions()
     interval = 60.0 / scenario.rate_per_min
@@ -143,6 +181,8 @@ async def run_scenario(scenario: Scenario, *, source: str) -> ScenarioResult:
         wall_seconds=wall,
         peak_waiting=runtime.queue.peak_waiting,
         peak_inflight=runtime.queue.peak_inflight,
+        source=source,
+        offered_per_min=scenario.rate_per_min,
     )
 
 
@@ -171,12 +211,47 @@ async def run_all(
 
 
 def append_summary(results: list[ScenarioResult], path: Path) -> None:
-    """Queue gauges are not columns in results.csv, so keep them beside it."""
+    """Queue gauges are not columns in results.csv, so keep them beside it.
+
+    Rows for scenarios not in this run are kept: running three scenarios must not
+    erase the summary of the five that ran earlier.
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
+    merged: dict[str, ScenarioResult | dict[str, str]] = {}
+    if path.exists():
+        with path.open(encoding="utf-8", newline="") as old:
+            merged.update({row["scenario"]: row for row in csv.DictReader(old)})
+    merged.update({item.scenario: item for item in results})
+    results = sorted(merged.values(), key=lambda item: str(getattr(item, "scenario", "")))  # type: ignore[arg-type]
     with path.open("w", encoding="utf-8", newline="") as fh:
         writer = csv.writer(fh)
-        writer.writerow(["scenario", "wall_seconds", "peak_waiting", "peak_inflight", "requests"])
+        # duration and offered rate are not columns of results.csv (its schema is fixed
+        # by the brief), so they live beside it and Table 2a joins on scenario name.
+        writer.writerow(
+            [
+                "scenario",
+                "wall_seconds",
+                "peak_waiting",
+                "peak_inflight",
+                "requests",
+                "source",
+                "offered_per_min",
+            ]
+        )
         for item in results:
+            if isinstance(item, dict):  # a row kept from an earlier run
+                writer.writerow(
+                    [
+                        item.get("scenario"),
+                        item.get("wall_seconds"),
+                        item.get("peak_waiting"),
+                        item.get("peak_inflight"),
+                        item.get("requests"),
+                        item.get("source"),
+                        item.get("offered_per_min"),
+                    ]
+                )
+                continue
             writer.writerow(
                 [
                     item.scenario,
@@ -184,6 +259,8 @@ def append_summary(results: list[ScenarioResult], path: Path) -> None:
                     item.peak_waiting,
                     item.peak_inflight,
                     len(item.rows),
+                    item.source,
+                    round(item.offered_per_min, 1),
                 ]
             )
 
