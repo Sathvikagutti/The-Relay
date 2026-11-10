@@ -34,11 +34,12 @@ CSS = """
 body { font-family: "Segoe UI", Arial, sans-serif; font-size: 7.8pt; line-height: 1.22;
        color: #111; margin: 0; }
 h1 { font-size: 12pt; margin: 0 0 3pt 0; letter-spacing: -0.2pt; }
-h2 { font-size: 9pt; margin: 5pt 0 1.5pt 0; border-bottom: 0.5pt solid #bbb;
+h2 { font-size: 9pt; margin: 4pt 0 1.2pt 0; border-bottom: 0.5pt solid #bbb;
      padding-bottom: 0.8pt; page-break-after: avoid; }
 p { margin: 0 0 2.4pt 0; text-align: justify; }
-table { border-collapse: collapse; width: 100%; margin: 1.5pt 0 3pt 0; font-size: 6.7pt; }
-th, td { border: 0.4pt solid #999; padding: 0.9pt 2pt; text-align: left; }
+table { border-collapse: collapse; width: 100%; margin: 1.2pt 0 2.4pt 0; font-size: 6.1pt;
+        table-layout: auto; }
+th, td { border: 0.4pt solid #999; padding: 0.6pt 1.4pt; text-align: left; }
 th { background: #eee; }
 blockquote { margin: 2pt 0 4pt 0; padding: 3pt 5pt; border-left: 2pt solid #888;
              background: #f6f6f6; font-style: italic; }
@@ -126,8 +127,47 @@ def find_browser() -> str:
     raise SystemExit("no Edge or Chrome found to print the PDF")
 
 
+def table_block(key: str) -> str:
+    """Return the pipe table for `key` straight out of the generated TABLES.md.
+
+    The report used to carry its own copy of Tables 1-3. One load re-run later the
+    copy disagreed with results.csv and the numbers in the prose disagreed with both.
+    Tables now have exactly one source: `relay tables --write`.
+    """
+    text = (ROOT / "TABLES.md").read_text(encoding="utf-8")
+    wanted = key.lower()
+    blocks: list[list[str]] = []
+    current: list[str] = []
+    for line in text.splitlines():
+        if line.startswith("## Table "):
+            if current:
+                blocks.append(current)
+            current = [line]
+        elif current:
+            current.append(line)
+    if current:
+        blocks.append(current)
+    for block in blocks:
+        heading = block[0].lower()
+        number = re.match(r"## table ([0-9a-z]+)", heading)
+        if number and number.group(1) == wanted:
+            rows = [line for line in block if line.startswith("|")]
+            if not rows:
+                raise SystemExit(f"TABLES.md has no pipe table for {{%table:{key}%}}")
+            return "\n".join(rows)
+    raise SystemExit(f"TABLES.md has no section for {{%table:{key}%}}")
+
+
+def expand_tables(markdown: str) -> str:
+    return re.sub(
+        r"\{\{table:([0-9a-zA-Z]+)\}\}",
+        lambda match: table_block(match.group(1)),
+        markdown,
+    )
+
+
 def build() -> Path:
-    body = to_html(SOURCE.read_text(encoding="utf-8"))
+    body = to_html(expand_tables(SOURCE.read_text(encoding="utf-8")))
     HTML_PATH.write_text(
         f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS}</style></head>"
         f"<body>{body}</body></html>",

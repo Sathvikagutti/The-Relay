@@ -1,9 +1,9 @@
 scenario,wall_seconds,peak_waiting,peak_inflight,requests,source,offered_per_min
-steady,196.41,1,1,14,stand-in,4
-burst,15.06,1,11,30,stand-in,600
-overload,44.79,1,8,45,stand-in,60
-daily_exhausted,11.0,1,1,12,stand-in,60
-faulty,80.33,1,2,40,stand-in,30
-sustained,239.02,1,2,240,stand-in,60
-degraded,175.02,1,4,30,stand-in,12
-limit_halved,90.03,1,4,22,stand-in,25
+burst,3.01,19,4,30,stand-in,600
+faulty,92.04,1,2,40,stand-in,30
+overload,44.02,1,3,45,stand-in,60
+steady,196.63,1,1,14,stand-in,4
+sustained,239.03,1,2,240,stand-in,60
+daily_exhausted,11.02,1,1,12,stand-in,60
+degraded,146.34,3,4,30,stand-in,12
+limit_halved,68.96,5,4,22,stand-in,25

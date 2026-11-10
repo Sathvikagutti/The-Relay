@@ -90,9 +90,13 @@ class Trace:
 
 
 class JsonlWriter:
-    def __init__(self, path: Path) -> None:
+    def __init__(self, path: Path, *, truncate: bool = False) -> None:
         self.path = path
         path.parent.mkdir(parents=True, exist_ok=True)
+        if truncate:
+            # One file per run, not one file per history: appending across runs made
+            # the raw traces disagree with the per-run CSV that the tables read.
+            path.write_text("", encoding="utf-8")
 
     def append(self, record: dict[str, object]) -> None:
         with self.path.open("a", encoding="utf-8") as fh:

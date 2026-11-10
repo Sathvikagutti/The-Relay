@@ -108,11 +108,11 @@ steps 1-2.
 | `manifest.json` has absolute Windows paths | relative paths + `path_convention`, written by `fetch.portable()`; verified inside a copied tree | done |
 | Stand-in faults never exercised (fail/slow/partial at 0) | R7: 13 scripted tests + `faulty` scenario (5 errors, 1 timeout, 1 parse error) | done |
 | Sustained overload is 45 s | R8: `sustained` ran 239 s at 60/min, 12.5% ok | done |
-| Graceful degradation never triggered; burst sheds instead of queueing | R10: ladder measured (levels 0/1/2 = 22/21/17, context 578->411 tokens); shedding is the designed policy, now measured over 4 min | done |
+| Graceful degradation never triggered; burst sheds instead of queueing | R10: ladder measured from the current run (`degraded` levels 0/1/2, context and call counts in `docs/ANALYSIS.md`); burst now waits in the bounded queue instead of being dropped (see §7) | done |
 | Section 4 should split one slow request by `request_id` | R17: `2ff56ecb7f73` split; required new instrumentation (`limit_wait_ms`) | done |
 | Retrieval behaviour when the limit is close | step 4 (report + setting comparison) | open |
-| Conversation history must be the real one | R23, needs the tool's export | open |
-| Vaani "0.0% accuracy counters" claim must hold up live | R25, needs a live-site check | open |
+| Conversation history must be the real one | R23: `docs/CONVERSATION.md` quotes the prompts verbatim, lists the rules I set and the decisions I made, and discloses that the first turn was destroyed by the client's context compaction | done (as far as the tool allows) |
+| Vaani "0.0% accuracy counters" claim must hold up live | R25: live pages read 2026-11-10 — counters render `0M+`/`0.0%`/`<0ms`, body claims ~450 ms p90, `/pricing` has no free plan | done |
 | Real probe, calibration, real eval | R1, R2, R18 — blocked on the API key | open |
 
 ## 6. Blockers owned by the user
@@ -123,3 +123,41 @@ steps 1-2.
 - **API key** — `GROQ_API_KEY` is still `replace_me`. Estimated real-service cost:
   probe ≈ 3–5k tokens; real eval for one setting ≈ 55–60k tokens; all three settings
   ≈ 170k of the 200k daily budget. Approval needed before more than one setting.
+
+## 7. Second review: report/CSV drift, and the three harness bugs behind it
+
+The second review found that the report's limit-halved and retry figures did not match
+`results/results.csv`. The mismatch was real, and chasing it exposed three defects in the
+measurement harness, each of which is now fixed and covered by the notes below.
+
+| Review point | Cause | Fix | Evidence |
+| --- | --- | --- | --- |
+| limit halved: report says 10 OK / 45.5% / 36.4% / 18.2%, p50 17,146 ms; CSV says 9 OK / 40.9% / 0.0% / 59.1%, p50 2,485 ms | report tables were typed by hand and survived a load re-run | report now imports Tables 1, 2a, 2b and 3 from `report/TABLES.md` at build time (`{{table:2a}}` etc. in `report/REPORT.md`, expanded by `report/build_pdf.py`), and `TABLES.md` is only ever written by `relay tables --write` | `build_pdf.py: table_block/expand_tables`; `relay tables` diff vs `TABLES.md` is empty |
+| §5 repeats 45.5/36.4/18.2 | prose written from the old table | §5 rewritten from the current tables | `report/REPORT.md` §5 |
+| §6 says 38 retried rows, 3 succeeded; "0.36 when halved" | same stale run; the retried-row count was also read from the wrong filter | §6 now reports the current counts, computed from `results.csv` | `docs/ANALYSIS.md` §2 |
+| degraded "levels 22/21/17 of 30" sums to 60 | `results/raw/load_*.jsonl` was opened in append mode, so it accumulated every run ever made while the CSV held only the latest; the ladder counts came from the appended file | `JsonlWriter(truncate=True)` for load runs, so one run writes one file | `src/relay/obs/events.py`; raw line count equals CSV row count per scenario |
+| Peak queue is 1 in every scenario | `load.py` wrapped each request in an `asyncio.Semaphore(scenario.concurrency)` *and* the admission queue used the same number as its in-flight limit, so nothing ever waited and `peak_waiting` was structurally 1 | the redundant semaphore is gone: the queue is the only admission control, so waiting is real and counted | `peak_waiting` now 24 (burst) and 9-10 (overload/sustained) |
+
+Two further harness defects were found while re-running and would have produced
+misleading numbers even after the above:
+
+* **Fault rates leaked between scenarios.** The stand-in keeps `PARAMS` in process
+  globals and the `faulty` scenario set them by query string, so every later scenario in
+  the same server process ran with 15% server errors. Every scenario now states
+  `fail=0&timeout=0&partial=0` explicitly (`SERVER_DOCUMENTED`), and only `faulty`
+  overrides them. Signature of the old behaviour: a `steady` run at 4/min with retries
+  and one 30 s timeout, which is impossible without injected faults.
+* **Rate windows leaked between scenarios.** The simulator's minute/day buckets are also
+  process-global, so `limit_halved` inherited the empty minute left by the 240-request
+  `sustained` run and refused all 22 requests in 4 ms. The stand-in now exposes
+  `POST /reset`, and the load runner calls it before every scenario.
+
+Both are harness bugs, not scheduler results: they made the system look like it dropped
+traffic it never saw. With them fixed, `limit_halved` and `degraded` are measured against
+a clean window, which is what the report now shows.
+
+### What did not change
+
+The API-key blockers stand: no real probe, no calibration, no real evaluation, and
+`final_grade` is still blank for the author's own judgement. Those are §6 items and this
+review did not touch them.

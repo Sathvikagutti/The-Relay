@@ -211,6 +211,20 @@ async def chat_completions(
         SIM.inflight = max(0, SIM.inflight - 1)
 
 
+@app.post("/reset")
+async def reset() -> dict[str, object]:
+    """Clear the rate windows and counters between load scenarios.
+
+    The simulator keeps its minute and day windows in one process-global object, so
+    two scenarios run back to back would share a bucket: a 240-request sustained run
+    leaves the next scenario starting with nothing left in the minute. The load runner
+    asks for a clean window explicitly instead of hoping the clock has rolled over.
+    """
+    global SIM
+    SIM = Simulator(params=PARAMS, limits=LIMITS)
+    return {"status": "reset"}
+
+
 @app.get("/stats")
 async def stats() -> dict[str, object]:
     return {

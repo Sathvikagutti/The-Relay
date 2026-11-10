@@ -25,3 +25,6 @@ report/report.html
 .mypy_cache/
 .vscode/
 .DS_Store
+
+# Scratch output from load re-runs (the committed evidence is results/load/*.csv)
+results/load_*.log

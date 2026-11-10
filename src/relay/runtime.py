@@ -48,6 +48,7 @@ def build_runtime(
     limits: LimiterLimits | None = None,
     config: PipelineConfig | None = None,
     trace_name: str = "adhoc",
+    truncate_trace: bool = False,
     max_inflight: int = 4,
     max_waiting: int = 32,
     budget_state: bool = True,
@@ -103,6 +104,6 @@ def build_runtime(
         model=resolved_model,
         source=source,
         config=config or PipelineConfig(),
-        trace_writer=JsonlWriter(trace_path),
+        trace_writer=JsonlWriter(trace_path, truncate=truncate_trace),
     )
     return Runtime(relay=relay, limiter=limiter, queue=queue, trace_path=trace_path, source=source)

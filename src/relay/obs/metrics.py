@@ -405,8 +405,9 @@ def all_tables(csv_path: Path = CSV_PATH) -> str:
         "",
         "Peak queue is the load runner's `peak_waiting` gauge when the run wrote one, "
         "otherwise the maximum overlap of [start_time, start_time + total_ms] intervals "
-        "computed from the CSV. It stays at 1 in the shedding scenarios because a request "
-        "refused by the limiter is rejected before it is admitted, so it never waits.",
+        "computed from the CSV. A request waits when the in-flight slots are busy, so a "
+        "scenario that offers traffic faster than four calls can drain shows a queue; one "
+        "that is refused on the token budget before admission does not.",
         "",
         "Cost is $0.00 because the free tier is not billed; no list price was paid, so "
         "no list-price figure is reported.",

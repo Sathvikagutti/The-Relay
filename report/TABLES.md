@@ -20,27 +20,27 @@ Values in the Documented column are from console.groq.com/docs/rate-limits for `
 
 | Scenario | Source | Requests | Answered | Duration (s) | Offered/min | TTFT p50 | TTFT p95 | TTFT p99 | Total p50 | Total p95 | Total p99 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| burst | stand-in | 30 | 1 | 15.1 | 600.0 | 183 | 183 | 183 | 14243 | 14243 | 14243 |
+| burst | stand-in | 30 | 5 | 3.0 | 600.0 | 162 | 328 | 359 | 1791 | 2419 | 2501 |
 | daily_exhausted | stand-in | 12 | 0 | 11.0 | 60.0 | not measured | not measured | not measured | not measured | not measured | not measured |
-| degraded | stand-in | 30 | 12 | 175.0 | 12.0 | 210 | 439 | 556 | 1200 | 14546 | 23381 |
-| faulty | stand-in | 40 | 9 | 80.3 | 30.0 | 187 | 734 | 968 | 1574 | 3157 | 3602 |
-| limit_halved | stand-in | 22 | 9 | 90.0 | 25.0 | 392 | 1203 | 1409 | 2485 | 30871 | 31640 |
-| overload | stand-in | 45 | 3 | 44.8 | 60.0 | 270 | 352 | 359 | 1779 | 11623 | 12498 |
-| steady | stand-in | 14 | 14 | 196.4 | 4.0 | 192 | 381 | 420 | 1494 | 2099 | 2195 |
-| sustained | stand-in | 240 | 30 | 239.0 | 60.0 | 188 | 753 | 1029 | 1205 | 1681 | 1905 |
+| degraded | stand-in | 30 | 19 | 146.3 | 12.0 | 166 | 600 | 1012 | 1607 | 27327 | 30549 |
+| faulty | stand-in | 40 | 12 | 92.0 | 30.0 | 142 | 874 | 937 | 1408 | 2342 | 2394 |
+| limit_halved | stand-in | 22 | 11 | 69.0 | 25.0 | 93 | 325 | 358 | 25420 | 32859 | 33817 |
+| overload | stand-in | 45 | 6 | 44.0 | 60.0 | 172 | 348 | 351 | 1574 | 1983 | 2032 |
+| steady | stand-in | 14 | 14 | 196.6 | 4.0 | 175 | 744 | 1049 | 1583 | 2120 | 2164 |
+| sustained | stand-in | 240 | 30 | 239.0 | 60.0 | 166 | 757 | 1035 | 1379 | 1834 | 1970 |
 
 ## Table 2b - reliability, retries, queue and cost
 
 | Scenario | Succeeded | Rate-limited | Timed out or given up | Retries/request | Peak queue | Tokens out/answer | Cost/1000 answers |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| burst | 3.3% | 96.7% | 0.0% | 0.27 | 1 | 78 | $0.00 (free tier) |
+| burst | 16.7% | 53.3% | 30.0% | 0.27 | 19 | 88 | $0.00 (free tier) |
 | daily_exhausted | 0.0% | 100.0% | 0.0% | 0.00 | 1 | not measured | $0.00 (free tier) |
-| degraded | 40.0% | 43.3% | 16.7% | 0.27 | 1 | 66 | $0.00 (free tier) |
-| faulty | 22.5% | 62.5% | 15.0% | 0.20 | 1 | 66 | $0.00 (free tier) |
-| limit_halved | 40.9% | 0.0% | 59.1% | 0.18 | 1 | 69 | $0.00 (free tier) |
-| overload | 6.7% | 93.3% | 0.0% | 0.18 | 1 | 82 | $0.00 (free tier) |
+| degraded | 63.3% | 30.0% | 6.7% | 0.27 | 3 | 64 | $0.00 (free tier) |
+| faulty | 30.0% | 62.5% | 7.5% | 0.20 | 1 | 67 | $0.00 (free tier) |
+| limit_halved | 50.0% | 0.0% | 50.0% | 0.00 | 5 | 70 | $0.00 (free tier) |
+| overload | 13.3% | 86.7% | 0.0% | 0.18 | 1 | 84 | $0.00 (free tier) |
 | steady | 100.0% | 0.0% | 0.0% | 0.00 | 1 | 75 | $0.00 (free tier) |
-| sustained | 12.5% | 87.5% | 0.0% | 0.03 | 1 | 66 | $0.00 (free tier) |
+| sustained | 12.5% | 87.5% | 0.0% | 0.03 | 1 | 65 | $0.00 (free tier) |
 
 ## Table 3 - retrieval settings, quality and cost
 
@@ -54,6 +54,6 @@ Source: stand-in. Grades: automatic gold-region check, not human. Quotes verifie
 
 Table 2a latency covers successful requests only; refused and timed-out requests are counted in Table 2b, because a 7 ms refusal is not a 7 ms answer.
 
-Peak queue is the load runner's `peak_waiting` gauge when the run wrote one, otherwise the maximum overlap of [start_time, start_time + total_ms] intervals computed from the CSV. It stays at 1 in the shedding scenarios because a request refused by the limiter is rejected before it is admitted, so it never waits.
+Peak queue is the load runner's `peak_waiting` gauge when the run wrote one, otherwise the maximum overlap of [start_time, start_time + total_ms] intervals computed from the CSV. A request waits when the in-flight slots are busy, so a scenario that offers traffic faster than four calls can drain shows a queue; one that is refused on the token budget before admission does not.
 
 Cost is $0.00 because the free tier is not billed; no list price was paid, so no list-price figure is reported.
