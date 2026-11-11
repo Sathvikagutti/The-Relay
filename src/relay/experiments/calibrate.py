@@ -71,7 +71,11 @@ def calibrate() -> dict[str, object]:
         "timeout_rate": 0.0,
         "partial_rate": 0.0,
         "calibrated": True,
-        "calibrated_from": f"{len(calls)} successful real calls + probe latency sample",
+        "calibrated_from": (
+            f"probe latency sample ({latency.get('ttft_sample') or latency.get('sample')} calls "
+            f"with visible output)"
+            + (f" plus {len(calls)} traced pipeline calls" if calls else "")
+        ),
         "sample_size": len(calls) or int(latency.get("ok", 0)),
         "fitted_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "limits_source": limits["documented"],
