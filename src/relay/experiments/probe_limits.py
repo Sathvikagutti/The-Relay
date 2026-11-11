@@ -45,10 +45,15 @@ DOCUMENTED = {
     "note": "Free Plan table; limits apply per organisation, not per key.",
 }
 
+# `openai/gpt-oss-120b` spends its first tokens on reasoning: with max_tokens=6 it
+# returns finish_reason=length, zero content chunks and a null TTFT. The sample below
+# therefore leaves enough headroom to reach visible content, or it would record 0 ms
+# TTFT as if the provider had answered instantly.
 SMALL = [{"role": "user", "content": "Reply with the single word: ok"}]
+LATENCY_MAX_TOKENS = 64
 
 
-async def _one(provider: GroqProvider, max_tokens: int = 6, prompt: str | None = None) -> ChatResult:
+async def _one(provider: GroqProvider, max_tokens: int = LATENCY_MAX_TOKENS, prompt: str | None = None) -> ChatResult:
     messages = [{"role": "user", "content": prompt}] if prompt else SMALL
     return await provider.chat(ChatRequest(messages=messages, max_tokens=max_tokens))
 
@@ -95,14 +100,17 @@ async def probe(provider: GroqProvider, *, raw_path: Path) -> dict[str, object]:
         latency.append(result)
         await asyncio.sleep(1.2)
     ok = [item for item in latency if item.ok]
+    timed = [item for item in ok if item.ttft_ms is not None]
     report["latency"] = {
         "sample": len(latency),
         "ok": len(ok),
-        "ttft_p50_ms": percentile([item.ttft_ms or 0 for item in ok], 50),
-        "ttft_p95_ms": percentile([item.ttft_ms or 0 for item in ok], 95),
+        "ttft_sample": len(timed),
+        "ttft_p50_ms": percentile([float(item.ttft_ms) for item in timed], 50),
+        "ttft_p95_ms": percentile([float(item.ttft_ms) for item in timed], 95),
         "total_p50_ms": percentile([item.total_ms for item in ok], 50),
         "total_p95_ms": percentile([item.total_ms for item in ok], 95),
         "tokens_out_p50": percentile([float(item.tokens_out) for item in ok], 50),
+        "note": "ttft stats cover only calls that produced visible content",
     }
     header_sample = next((item.headers for item in latency if item.headers), {})
     report["observed_from_headers"] = {
@@ -111,9 +119,32 @@ async def probe(provider: GroqProvider, *, raw_path: Path) -> dict[str, object]:
         "headers": header_sample,
     }
 
-    # 2. RPM: cross it on purpose with minimal payloads
+    # 2. TPM before RPM: a request burst fills the request bucket, and a 429 that
+    # names RPM says nothing about the token ceiling. Order matters for attribution.
+    filler = " ".join(["transformer attention sequence model"] * 1000)  # ~4k tokens
+    big = await asyncio.gather(
+        _one(provider, max_tokens=16, prompt=f"Summarise in one word. {filler}"),
+        _one(provider, max_tokens=16, prompt=f"Summarise in one word. {filler}"),
+    )
+    for result in big:
+        record("tpm_probe", result)
+    report["tpm_probe"] = {
+        "requests": 2,
+        "ok": sum(1 for item in big if item.ok),
+        "rate_limited": sum(1 for item in big if item.status == "rate_limited"),
+        "prompt_tokens": [item.tokens_in for item in big],
+        "token_limited": [
+            item.error_kind
+            for item in big
+            if item.status == "rate_limited" and "token" in (item.error or "").lower()
+        ],
+        "sample_body": next((item.error for item in big if item.error), None),
+        "retry_after_s": [item.retry_after_s for item in big],
+    }
+
+    # 3. RPM: cross it on purpose with minimal payloads
     started = time.perf_counter()
-    burst = await asyncio.gather(*(_one(provider, max_tokens=4) for _ in range(32)))
+    burst = await asyncio.gather(*(_one(provider, max_tokens=16) for _ in range(32)))
     burst_s = time.perf_counter() - started
     for result in burst:
         record("rpm_burst", result)
@@ -129,30 +160,13 @@ async def probe(provider: GroqProvider, *, raw_path: Path) -> dict[str, object]:
         "sample_body": next((item.error for item in limited if item.error), None),
     }
 
-    # 3. TPM: two large prompts in the same window
-    filler = " ".join(["transformer attention sequence model"] * 700)  # ~4.5k tokens
-    big = await asyncio.gather(
-        _one(provider, max_tokens=16, prompt=f"Summarise in one word. {filler}"),
-        _one(provider, max_tokens=16, prompt=f"Summarise in one word. {filler}"),
-    )
-    for result in big:
-        record("tpm_probe", result)
-    report["tpm_probe"] = {
-        "requests": 2,
-        "ok": sum(1 for item in big if item.ok),
-        "rate_limited": sum(1 for item in big if item.status == "rate_limited"),
-        "prompt_tokens": [item.tokens_in for item in big],
-        "sample_body": next((item.error for item in big if item.error), None),
-        "retry_after_s": [item.retry_after_s for item in big],
-    }
-
     # 4. recovery: how long until the window frees
     recovery_started = time.perf_counter()
     attempts = 0
     recovered_after: float | None = None
     while attempts < 40:
         attempts += 1
-        result = await _one(provider, max_tokens=4)
+        result = await _one(provider, max_tokens=16)
         record("recovery", result, {"attempt": attempts})
         if result.ok:
             recovered_after = time.perf_counter() - recovery_started

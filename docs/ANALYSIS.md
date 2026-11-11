@@ -9,20 +9,23 @@ The set has 20 questions: 13 answerable from the three papers, 7 deliberately no
 (`q14`–`q20`). Each runs under three retrieval settings, so there are 39 answerable
 and 21 unanswerable results.
 
-| Bucket | Rows | `correct` | `wrong` | `refused_correctly` | `refused_wrongly` |
+| Source / setting | Rows | `correct` | `wrong` | `refused_correctly` | `refused_wrongly` |
 | --- | --- | --- | --- | --- | --- |
-| Answerable (13 x 3) | 39 | 14 | 25 | 0 | 0 |
-| Not answerable (7 x 3) | 21 | 0 | 21 | **0** | 0 |
+| real, A | 20 | 3 | 5 | 6 | 6 |
+| stand-in, B | 20 | 4 | 16 | 0 | 0 |
+| stand-in, C | 20 | 5 | 15 | 0 | 0 |
 
-Per setting: A 5 correct / 15 wrong, B 4/16, C 5/15.
+The real row is the one that tests the refusal branch, and it now refuses: of the 13
+answerable questions, 3 were answered and cited in the gold region, 4 were answered
+from the wrong passage and 6 were refused anyway; of the 7 questions the corpus cannot
+answer, 6 were refused correctly and 1 was answered (and graded `wrong`). So refusal
+correctness on the real service is 6/7, not 0/7.
 
-**What that means.** The system refused nothing. All 21 unanswerable rows came back
-as answers, and every one was graded `wrong` because the citation check found no gold
-region for a question that has no answer in the corpus. This is not a pipeline bug:
-it is the stand-in model, which sets `answerable = bool(question)` in
-`services/standin/sim.py:187` and therefore always answers. A real model is what makes
-the refusal branch behave, which is why the 0% refusal rate in Table 3 must not be
-used to choose a retrieval setting.
+**The stand-in rows still cannot be used for refusal rates.** B and C refused nothing:
+the simulator sets `answerable = bool(question)` in `services/standin/sim.py:187` and
+therefore always answers, so all 14 unanswerable stand-in rows came back as answers.
+That is why Table 3 carries a per-setting `Source` column and why its B/C quality cells
+are not comparable with A's.
 
 The refusal *logic* is exercised elsewhere and does work: `pytest tests/test_fault_behaviour.py`
 drives `REFUSAL_NO_PASSAGE`, `REFUSAL_UNVERIFIED` and `limit_reply()` paths, and the
@@ -48,8 +51,10 @@ body was captured directly from the stand-in for this note (2026-11-10, `tpm=1`)
 
 > Rate limit reached for openai/gpt-oss-120b on tokens per minute (TPM). Please try again in 60.0s.
 
-That is the stand-in speaking, shaped like the provider's documented error, not a Groq
-response — no real request has been made yet (`docs/AUDIT.md` §6).
+That is the stand-in speaking, shaped like the provider's error. The real service's 429
+was captured the next day by `relay probe-limits` and states
+`Limit 30 ... Please try again in 2s` in `results/limits.json`, so the shape the
+stand-in imitates is the shape the provider actually returns.
 
 So the refusal rate is arithmetic, not a bug. 30 answers in 239 s is **7.5 answers per
 minute** against 60 offered, while the documented request ceiling is 30/min and never

@@ -1,0 +1,385 @@
+[
+  {
+    "question_id": "q01",
+    "category": "clear",
+    "request_id": "6cf8c78549d9",
+    "answer_grade": "correct",
+    "status": "ok",
+    "answer": "The key vectors have dimension dk. In the base model with h = 8 heads, each head uses dk = dmodel/h = 64 (so dk = dv = 64 per head).",
+    "reference": "Keys (and values) have dimension dk; each head uses dk = dv = dmodel/h = 64 with h = 8.",
+    "citations": [
+      {
+        "label": "attention p.4 §3.2.1 Scaled Dot-Product Attention",
+        "quote": "The input consists of queries and keys of dimension dk, and values of dimension dv.",
+        "verified": true
+      },
+      {
+        "label": "attention p.5 §3.2.2 Multi-Head Attention",
+        "quote": "For each of these we use dk = dv = dmodel/h = 64.",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1202,
+    "tokens_out": 615,
+    "retries": 0,
+    "first_token_ms": 891.7519999668002,
+    "total_ms": 2862.8886999795213
+  },
+  {
+    "question_id": "q02",
+    "category": "clear",
+    "request_id": "4000e42e235d",
+    "answer_grade": "correct",
+    "status": "ok",
+    "answer": "The base Transformer uses 8 attention heads, each with a dimension of 64.",
+    "reference": "h = 8 heads, dk = dv = dmodel/h = 64.",
+    "citations": [
+      {
+        "label": "attention p.5 §3.2.2 Multi-Head Attention",
+        "quote": "In this work we employ h = 8 parallel attention layers, or heads. For each of these we use dk = dv = dmodel/h = 64.",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1519,
+    "tokens_out": 486,
+    "retries": 0,
+    "first_token_ms": 984.8963000113145,
+    "total_ms": 3688.2339000003412
+  },
+  {
+    "question_id": "q03",
+    "category": "clear",
+    "request_id": "f0bc6f94fd14",
+    "answer_grade": "refused_wrongly",
+    "status": "ok",
+    "answer": "I drafted an answer but could not verify its quotations against the papers, so I am not sending it. A wrong citation is worse than no answer here.",
+    "reference": "Adam with beta1=0.9, beta2=0.98, eps=1e-9; lrate = d_model^-0.5 * min(step^-0.5, step * warmup^-1.5), warmup_steps = 4000.",
+    "citations": [],
+    "tokens_in": 4215,
+    "tokens_out": 1880,
+    "retries": 0,
+    "first_token_ms": 994.39170002006,
+    "total_ms": 59017.71539996844
+  },
+  {
+    "question_id": "q04",
+    "category": "clear",
+    "request_id": "18bba6975d41",
+    "answer_grade": "wrong",
+    "status": "ok",
+    "answer": "Inner Monologue is a component of Moshi that generates text tokens as a prefix before the audio tokens, i.e., it predicts a sequence of text tokens prior to producing the corresponding audio tokens. This adds an extra token per multi‑stream timestep, increasing the generation from 16 to 17 tokens.",
+    "reference": "A text token stream produced by Moshi itself, aligned with the audio, predicted as a prefix to the audio tokens; it improves generation quality and enables streaming ASR/TTS.",
+    "citations": [
+      {
+        "label": "moshi p.26 §5.3 Ablations on generative modeling",
+        "quote": "modeling text tokens as a prefix to audio tokens with Inner Monologue",
+        "verified": true
+      },
+      {
+        "label": "moshi p.29 §5.5 Spoken question answering",
+        "quote": "each multi-stream timestep requires generating 17 tokens, instead of 16 without Inner Monologue",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1581,
+    "tokens_out": 784,
+    "retries": 0,
+    "first_token_ms": 907.0568999741226,
+    "total_ms": 3834.3880999600515
+  },
+  {
+    "question_id": "q05",
+    "category": "clear",
+    "request_id": "bbd13e06d403",
+    "answer_grade": "refused_wrongly",
+    "status": "ok",
+    "answer": "I drafted an answer but could not verify its quotations against the papers, so I am not sending it. A wrong citation is worse than no answer here.",
+    "reference": "A regulariser on the routing/boundary probabilities that pushes the achieved compression ratio toward the target ratio, preventing trivial solutions (compress nothing or compress everything).",
+    "citations": [],
+    "tokens_in": 1491,
+    "tokens_out": 854,
+    "retries": 0,
+    "first_token_ms": 623.8197999773547,
+    "total_ms": 53917.08199994173
+  },
+  {
+    "question_id": "q06",
+    "category": "multi_passage",
+    "request_id": "448fbc404de0",
+    "answer_grade": "refused_wrongly",
+    "status": "ok",
+    "answer": "I drafted an answer but could not verify its quotations against the papers, so I am not sending it. A wrong citation is worse than no answer here.",
+    "reference": "Moshi reports streaming ASR via Inner Monologue in Section 5.7, with WER on LibriSpeech test-clean in its streaming ASR table.",
+    "citations": [],
+    "tokens_in": 3092,
+    "tokens_out": 1698,
+    "retries": 0,
+    "first_token_ms": 2989.2182999756187,
+    "total_ms": 5978.378599975258
+  },
+  {
+    "question_id": "q07",
+    "category": "multi_passage",
+    "request_id": "b16756b1f259",
+    "answer_grade": "correct",
+    "status": "ok",
+    "answer": "The Transformer reduces the work of modeling long sequences by using multi‑head self‑attention that processes many positions in parallel and by masking out illegal connections, so each layer can attend to all relevant tokens without sequential recurrence. H‑Net reduces work by learning dynamic chunking boundaries that compress low‑information regions while keeping high‑information content, allowing the model to allocate computation adaptively to fewer, larger chunks. Thus, the Transformer operates at the token level with parallel attention, whereas H‑Net changes the sequence length itself through adaptive chunking.",
+    "reference": "The Transformer replaces recurrence with self-attention so positions are computed in parallel (Section 4 compares complexity per layer); H-Net instead learns data-dependent chunk boundaries and processes coarser stages at lower resolution.",
+    "citations": [
+      {
+        "label": "attention p.3 §3.2 Attention",
+        "quote": "Multi-Head Attention consists of several attention layers running in parallel.",
+        "verified": true
+      },
+      {
+        "label": "attention p.5 §3.2.3 Applications of Attention in our Model",
+        "quote": "We implement this inside of scaled dot-product attention by masking out (setting to −∞) all values in the input of the softmax which correspond to illegal connections.",
+        "verified": true
+      },
+      {
+        "label": "dynamic_chunking p.6 §2.2 Dynamic Chunking (DC)",
+        "quote": "this dynamic approach enables the model to allocate computational resources efficiently by compressing low-information regions while preserving high-information content at appropriate granularity.",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1239,
+    "tokens_out": 890,
+    "retries": 0,
+    "first_token_ms": 1269.5490999612957,
+    "total_ms": 56080.46730002388
+  },
+  {
+    "question_id": "q08",
+    "category": "multi_passage",
+    "request_id": "33aa2451c841",
+    "answer_grade": "wrong",
+    "status": "ok",
+    "answer": "Moshi combines Helium, a 7‑billion‑parameter text language model pretrained on 2.1 trillion tokens, which provides the textual understanding, with a smaller Transformer that predicts the audio stream, handling the speech generation side of the system.",
+    "reference": "Helium, a text language model, and Mimi, a neural audio codec producing semantic-acoustic tokens; a smaller Transformer models the audio tokens hierarchically.",
+    "citations": [
+      {
+        "label": "moshi p.2 §1 Introduction",
+        "quote": "We present Helium, a 7B-parameter text LLM that we pretrain on 2 .1T tokens of public English data.",
+        "verified": true
+      },
+      {
+        "label": "moshi p.2 §1 Introduction",
+        "quote": "We propose Moshi, a new architecture for audio language modeling, which combines Helium with a smaller Transformer (Vaswani et al., 2017) model to predict audio",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1395,
+    "tokens_out": 657,
+    "retries": 0,
+    "first_token_ms": 758.9006999041885,
+    "total_ms": 2194.025299977511
+  },
+  {
+    "question_id": "q09",
+    "category": "multi_passage",
+    "request_id": "ce1931a88e26",
+    "answer_grade": "wrong",
+    "status": "ok",
+    "answer": "Chunk boundaries are produced by a routing module that outputs boundary probabilities, effectively drawing chunk boundaries dynamically. The decision is trained with a binary cross‑entropy boundary‑prediction loss applied to those probabilities, encouraging the router to pass the start of each real token through the main network.",
+    "reference": "A routing module emits boundary probabilities from similarity/downsampling scores (Section 2.2.1), and the ratio loss plus the language-modelling loss train it (Section 2.2.3).",
+    "citations": [
+      {
+        "label": "dynamic_chunking p.3 §1 Introduction",
+        "quote": "Key components of a chunking layer: (a) a routing module for dynamically drawing chunk boundaries, and (b) a downsampler that selectively retains vectors based on boundary indicators",
+        "verified": true
+      },
+      {
+        "label": "dynamic_chunking p.38 §F Distilling Token-Level Models to Byte-Level",
+        "quote": "A binary cross-entropy boundary-prediction loss (with equal weight as the main loss) that operates on the routing module probabilities and targets the router to pass the start of every real token through the main network.",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1739,
+    "tokens_out": 896,
+    "retries": 0,
+    "first_token_ms": 1061.8875999934971,
+    "total_ms": 3632.988999946974
+  },
+  {
+    "question_id": "q10",
+    "category": "citation_sensitive",
+    "request_id": "ae488dba2b32",
+    "answer_grade": "refused_wrongly",
+    "status": "ok",
+    "answer": "I drafted an answer but could not verify its quotations against the papers, so I am not sending it. A wrong citation is worse than no answer here.",
+    "reference": "Sinusoidal; chosen because they may allow extrapolation to longer sequences and let the model attend by relative position.",
+    "citations": [],
+    "tokens_in": 2123,
+    "tokens_out": 1510,
+    "retries": 0,
+    "first_token_ms": 777.2742999950424,
+    "total_ms": 58296.41049995553
+  },
+  {
+    "question_id": "q11",
+    "category": "citation_sensitive",
+    "request_id": "4fc794213d3d",
+    "answer_grade": "wrong",
+    "status": "ok",
+    "answer": "The base Transformer model uses a batch size of 256 and is trained for 100,000 steps.",
+    "reference": "Base model: 100,000 steps, batch of 25,000 source and 25,000 target tokens (Table 3 rows).",
+    "citations": [
+      {
+        "label": "dynamic_chunking p.11 §3 Experiments",
+        "quote": "We use batch size 256 for all models; the total batch size is just under 0.5M tokens per batch for the baseline BPE Transformer...",
+        "verified": true
+      },
+      {
+        "label": "attention p.7 §5.2 Hardware and Schedule",
+        "quote": "We trained the base models for a total of 100,000 steps or 12 hours.",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1782,
+    "tokens_out": 709,
+    "retries": 0,
+    "first_token_ms": 599.6162000810727,
+    "total_ms": 2392.817199928686
+  },
+  {
+    "question_id": "q12",
+    "category": "citation_sensitive",
+    "request_id": "a534a5aeffc3",
+    "answer_grade": "refused_wrongly",
+    "status": "ok",
+    "answer": "The papers do not state this.",
+    "reference": "Section 5.7 describes using Inner Monologue with a small delay for streaming ASR; the exact delay value is stated there and in Appendix C.",
+    "citations": [],
+    "tokens_in": 1466,
+    "tokens_out": 357,
+    "retries": 0,
+    "first_token_ms": 580.6244999403134,
+    "total_ms": 51949.93530004285
+  },
+  {
+    "question_id": "q13",
+    "category": "citation_sensitive",
+    "request_id": "82bcb64991ba",
+    "answer_grade": "refused_wrongly",
+    "status": "ok",
+    "answer": "I drafted an answer but could not verify its quotations against the papers, so I am not sending it. A wrong citation is worse than no answer here.",
+    "reference": "Dechunking smooths or repeats each chunk's representation back to the length of the original span, so downstream stages see a full-resolution sequence again (Section 2.2.2).",
+    "citations": [],
+    "tokens_in": 1801,
+    "tokens_out": 869,
+    "retries": 0,
+    "first_token_ms": 619.4141999585554,
+    "total_ms": 4292.982299928553
+  },
+  {
+    "question_id": "q14",
+    "category": "unanswerable",
+    "request_id": "ab053b8257d6",
+    "answer_grade": "refused_correctly",
+    "status": "ok",
+    "answer": "The papers do not state this.",
+    "reference": "Moshi is a speech-text dialogue model; the paper reports no WMT14 translation BLEU. Correct behaviour is to refuse.",
+    "citations": [],
+    "tokens_in": 1739,
+    "tokens_out": 286,
+    "retries": 0,
+    "first_token_ms": 916.1359000718221,
+    "total_ms": 2890.8330999547616
+  },
+  {
+    "question_id": "q15",
+    "category": "unanswerable",
+    "request_id": "63ca426d483a",
+    "answer_grade": "refused_correctly",
+    "status": "ok",
+    "answer": "The papers do not state this.",
+    "reference": "The paper reports hardware hours (8 P100s for 12 hours for the base model) but no dollar cost. Correct behaviour is to refuse or to report only the hours.",
+    "citations": [],
+    "tokens_in": 1772,
+    "tokens_out": 491,
+    "retries": 0,
+    "first_token_ms": 1582.847599987872,
+    "total_ms": 54462.821700028144
+  },
+  {
+    "question_id": "q16",
+    "category": "unanswerable",
+    "request_id": "a89c722ba340",
+    "answer_grade": "refused_correctly",
+    "status": "ok",
+    "answer": "The three papers in this library do not cover that. I only answer from Attention Is All You Need, Moshi, and Dynamic Chunking.",
+    "reference": "The paper evaluates language modelling, Chinese/code and DNA; no ImageNet results. Refuse.",
+    "citations": [],
+    "tokens_in": 219,
+    "tokens_out": 287,
+    "retries": 0,
+    "first_token_ms": 1963.6324000312015,
+    "total_ms": 2005.0784000195563
+  },
+  {
+    "question_id": "q17",
+    "category": "unanswerable",
+    "request_id": "d6e331503229",
+    "answer_grade": "wrong",
+    "status": "ok",
+    "answer": "The attention paper (Attention Is All You Need) introduces the ReLU activation function in its feed‑forward network.",
+    "reference": "None of them introduces ReLU; it is cited as prior work. Refuse.",
+    "citations": [
+      {
+        "label": "attention p.5 §3.3 Position-wise Feed-Forward Networks",
+        "quote": "This consists of two linear transformations with a ReLU activation in between.",
+        "verified": true
+      }
+    ],
+    "tokens_in": 1282,
+    "tokens_out": 555,
+    "retries": 0,
+    "first_token_ms": 1118.7212000368163,
+    "total_ms": 2267.6226999610662
+  },
+  {
+    "question_id": "q18",
+    "category": "hallucination_bait",
+    "request_id": "19adc35d8bfa",
+    "answer_grade": "refused_correctly",
+    "status": "ok",
+    "answer": "The papers do not state this.",
+    "reference": "No such hardware benchmark appears in the paper. Any specific millisecond figure is fabricated.",
+    "citations": [],
+    "tokens_in": 1547,
+    "tokens_out": 473,
+    "retries": 0,
+    "first_token_ms": 1048.2191999908537,
+    "total_ms": 2353.7860999349505
+  },
+  {
+    "question_id": "q19",
+    "category": "hallucination_bait",
+    "request_id": "377ed52683e3",
+    "answer_grade": "refused_correctly",
+    "status": "ok",
+    "answer": "The papers do not state this.",
+    "reference": "The paper reports compute/FLOPs and loss, not H100 tokens-per-second throughput.",
+    "citations": [],
+    "tokens_in": 1800,
+    "tokens_out": 433,
+    "retries": 0,
+    "first_token_ms": 902.6235999772325,
+    "total_ms": 53061.95539992768
+  },
+  {
+    "question_id": "q20",
+    "category": "hallucination_bait",
+    "request_id": "359c68970a49",
+    "answer_grade": "refused_correctly",
+    "status": "ok",
+    "answer": "The three papers in this library do not cover that. I only answer from Attention Is All You Need, Moshi, and Dynamic Chunking.",
+    "reference": "Pricing is not part of any of the three papers. Refuse; pricing belongs to the provider documentation.",
+    "citations": [],
+    "tokens_in": 227,
+    "tokens_out": 163,
+    "retries": 0,
+    "first_token_ms": 653.0761000467464,
+    "total_ms": 662.5366000225767
+  }
+]

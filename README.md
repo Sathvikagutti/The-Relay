@@ -88,8 +88,9 @@ docs/              plan, decisions, grading, checklist, audit, analysis, intervi
 Everything numeric lives in `results/results.csv` (one row per request, exact columns
 required by the brief) and `report/TABLES.md` (regenerated with `relay tables`, never
 typed by hand). `results/limits.json` does not exist in this submission: it is written by
-`relay probe-limits`, which needs `GROQ_API_KEY`. Until then Table 1 reports the documented
-values with `not measured` in the observed column, and says so.
+`relay probe-limits`, which needs `GROQ_API_KEY`. It has been run (`results/limits.json`), so Table 1 reports measured values where the
+probe could establish them and says `not measured` for tokens/day and in-flight, which
+it could not.
 
 ## What this does not do
 

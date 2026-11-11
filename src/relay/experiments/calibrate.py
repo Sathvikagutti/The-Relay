@@ -56,11 +56,16 @@ def calibrate() -> dict[str, object]:
     latency = limits.get("latency", {})
     if not latency.get("ok"):
         raise SystemExit("probe recorded no successful calls; cannot calibrate")
+    if latency.get("ttft_p50_ms") is None:
+        raise SystemExit(
+            "probe recorded no visible-content TTFT (reasoning-only responses); "
+            "re-run `relay probe-limits` before calibrating rather than fitting 0 ms"
+        )
 
     calls = _real_calls()
     params: dict[str, object] = {
-        "ttft_p50_ms": round(latency["ttft_p50_ms"], 1),
-        "ttft_p90_ms": round(latency.get("ttft_p95_ms") or latency["ttft_p50_ms"] * 2, 1),
+        "ttft_p50_ms": round(float(latency["ttft_p50_ms"]), 1),
+        "ttft_p90_ms": round(float(latency.get("ttft_p95_ms") or latency["ttft_p50_ms"]), 1),
         "per_token_ms": 4.0,
         "failure_rate": 0.0,
         "timeout_rate": 0.0,

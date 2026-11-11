@@ -8,24 +8,24 @@ against memory. Commands used are listed per row so the check can be repeated.
 | Area | Files / command | Result |
 | --- | --- | --- |
 | Source | `src/relay/**` (13 modules), `services/standin/**`, `tests/**` | present |
-| Tests | `.venv/Scripts/python.exe -m pytest -q` | **21 passed** in ~1.5 s |
-| Results | `results/results.csv` | 183 rows, header matches the brief exactly |
-| Results provenance | `source` column | **`stand-in` only — zero real Groq rows** |
+| Tests | `.venv/Scripts/python.exe -m pytest -q` | **34 passed** in ~15 s |
+| Results | `results/results.csv` | 493 rows, header matches the brief exactly |
+| Results provenance | `source` column | 20 `real` rows (eval setting A) and 473 `stand-in` rows |
 | Report | `report/REPORT.md`, `report/REPORT.pdf` | 2 pages, 12 headings in required order (pypdf check) |
 | Tables | `report/TABLES.md` via `relay tables --write` | Tables 1–3 generated from CSV |
 | Corpus | `data/index/manifest.json` | 3 pinned papers, SHA-256 recorded, **absolute Windows paths** |
-| Stand-in | `services/standin/sim.py`, `app.py` | calibrated flags exist, **no `params.json`, no `results/limits.json`** |
+| Stand-in | `services/standin/sim.py`, `app.py` | `params.json` fitted from the probe; `results/limits.json` present; `/health` reports `calibrated: true` |
 | Load | `src/relay/experiments/load.py` | 5 scenarios; overload = 45 requests @ 60/min |
-| Key | `.env` | `GROQ_API_KEY` still the placeholder — **no real call has ever run** |
+| Key | `.env` | `GROQ_API_KEY` present (not committed); probe, calibration and real eval setting A have run |
 
 ## 2. Review claims, re-verified
 
 | Review claim | Status | Evidence |
 | --- | --- | --- |
-| All 183 results are stand-in | **true** (now 493 rows, still all `stand-in`) | `sorted({r["source"] …}) == ['stand-in']` |
-| Real-service experiments not done | **true** | `results/limits.json` absent; `.env` placeholder |
-| Stand-in uses guessed defaults | **true** | `SimParams` defaults, `calibrated=False`, no `params.json` |
-| Calibration files missing | **true** | `results/limits.json`, `services/standin/params.json` do not exist |
+| All results are stand-in | **was true, now false** | 20 of 493 rows carry `source=real`; the 473 load rows remain stand-in by design |
+| Real-service experiments not done | **was true, now false** | `results/limits.json` from two probe runs; eval setting A ran against Groq |
+| Stand-in uses guessed defaults | **was true, now false** | `services/standin/params.json` fits TTFT 525/714 ms; `/health` says `calibrated: true` |
+| Calibration files missing | **was true, now false** | both files exist and are committed |
 | Stand-in always answers, 0% correct refusals | **true** | `sim.py:187` `answerable = bool(question)` |
 | Overload test not sustained | **true** | `load.py:60` — 45 requests at 60/min ≈ 45 s |
 | Failure/timeout/partial paths unexercised | **partly true** | `timeout_rate`, `failure_rate`, `partial_rate` exist in `SimParams`, but no scenario drives them and no test covers partials |
@@ -44,8 +44,8 @@ against memory. Commands used are listed per row so the check can be repeated.
 
 | ID | Requirement | Current implementation | Problem | Required change | Files | Verification | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| R1 | Real probe: RPM/RPD/TPM/TPD, in-flight, 429 body + retry-after, recovery, TTFT | `experiments/probe_limits.py` written, never run | no key | run it, record observed vs documented | `probe_limits.py`, `results/limits.json` | probe log + limits.json counters | **blocked** |
-| R2 | Calibrate stand-in from real data | `experiments/calibrate.py` written, never run | no measurements | run after R1, write `params.json` with metadata | `calibrate.py`, `services/standin/params.json` | params.json `sample_size`, `calibrated_from` | **blocked** |
+| R1 | Real probe: RPM/RPD/TPM/TPD, in-flight, 429 body + retry-after, recovery, TTFT | ran 2026-11-11: RPM ceiling stated as 30 in the 429 body, TPM/RPD from headers, 429 + `retry-after: 2.0`, recovery 3.0 s, TTFT p50 525 / p95 714 ms; TPD and in-flight stay unmeasured | TPD would spend the day's budget; in-flight is not exposed | keep as measured/not-measured, never guess | `probe_limits.py`, `results/limits.json` | `TABLES.md` Table 1 confidence column | **done (2 cells unmeasured)** |
+| R2 | Calibrate stand-in from real data | `relay calibrate` wrote `services/standin/params.json` from the probe | the fit has no cold start and no prompt-length term | disclose in report §2 | `calibrate.py`, `services/standin/params.json` | `params.json` `sample_size` 10, `calibrated: true` | **done** |
 | R3 | Stand-in must identify itself as uncalibrated | `/health` returns `calibrated: false` | ok, but silent in answers | keep, surface in report + CSV `source` | `services/standin/app.py` | `/health` body | **done** |
 | R4 | Real service must perform honest refusals; 0% is an artefact | `answerable = bool(question)` | unconditional answering | make answerability derivable from retrieved text; add refusal probes to eval | `services/standin/sim.py` | eval refusal rate > 0 with gold-region check | **not started** |
 | R5 | ≥15 questions, 5 buckets, manual verification | 20 questions (13 answerable, 7 not, 5 categories); `relay review-sheet` writes a 60-row `eval/manual_grades.csv` with `final_grade`, `evidence_support`, `citation_correct`, `abstention_correct`, `notes`, plus `eval/review_sheet.md` | the blank columns need the author's judgement | fill 60 rows; `relay tables` then prefers `final_grade` | `eval/manual_grades.csv`, `eval/review_sheet.md`, `experiments/review.py` | rows = 60, columns present; Table 3 footnote switches to "human" once filled | **partial (blocked on human)** |
@@ -59,18 +59,18 @@ against memory. Commands used are listed per row so the check can be repeated.
 | R13 | Table 1 columns: limit, value, how found, confidence, in-flight, recovery | 5 columns incl. Confidence, TPD, in-flight, 429 behaviour, recovery | none left; observed cells await the probe | keep | `obs/metrics.py` | `TABLES.md` rows 6-13 | **done** |
 | R14 | Table 2a: real/stand-in, requests, duration, offered rate, TTFT p50/95/99, total p50/95/99 | 12 columns, latency over successful requests only | none | keep | `metrics.py`, `load.py` | `TABLES.md` Table 2a | **done** |
 | R15 | Table 2b: ok/rate-limited/given-up %, retries/request, peak queue, tokens/answer, cost per 1000 | 1-decimal percentages, peak queue from the runner gauge, cost stated as $0.00 free tier | `tokens/answer` is `not measured` where nothing succeeded | keep | `metrics.py` | `TABLES.md` Table 2b | **done** |
-| R16 | Table 3: piece size, fetched, re-rank, questions, correct+cited %, wrong %, refused %, tokens, TTFT p50/95, total p50/95 | 14 columns incl. piece size/fetch/re-rank from `retrieval.yaml` | quality still stand-in only | rerun on real | `metrics.py` | `TABLES.md` Table 3 | **partial** |
+| R16 | Table 3: piece size, fetched, re-rank, questions, correct+cited %, wrong %, refused %, tokens, TTFT p50/95, total p50/95 | 15 columns, now with a per-setting `Source` column; A is real, B/C stand-in | A vs B/C cannot be ranked on quality across sources | state the limit; two more real runs would settle it | `metrics.py` | `TABLES.md` Table 3 | **partial (A real)** |
 | R17 | Single slow request broken down by id | `2ff56ecb7f73`: 31,832 ms = limit wait 27,261 + working 1,050 + queue 0 + retrying 0 | the first attempt showed 49 s unaccounted; limiter wait was untimed | added `limit_wait_ms` to the trace and re-ran | `obs/events.py`, `engine.py`, report §4 | trace JSONL matches report figures | **done** |
-| R18 | Three retrieval settings compared on evidence | A/B/C evaluated (stand-in) | comparison is stand-in-only | re-run best-effort on real, keep stand-in for the rest | `experiments/run_eval.py` | Table 3 | **blocked** |
+| R18 | Three retrieval settings compared on evidence | A/B/C evaluated; A on the real service (20 questions), B/C on stand-in | daily token budget stopped B/C real runs | disclose; rerun B/C on real next day | `experiments/run_eval.py` | Table 3 source column | **partial** |
 | R19 | Three ways the library misleads a naive retriever, with example questions | written in report | not demonstrated | add concrete question + retrieval result per failure mode | report, `eval/` | retrieved chunks listed | **partial** |
 | R20 | README matches reality | stale references rewritten; `limits.json`/`params.json` now described as probe/calibrate outputs | none | keep in sync after step 5 | `README.md`, `docs/SUBMISSION.md`, `docs/conversation-log.md` | `grep -n 'review.csv'` returns nothing | **done** |
 | R21 | Relative paths in manifest | `path` now `data/papers/<file>.pdf`, `path_convention` recorded; `fetch.portable()` writes relative from now on | none | keep | `data/index/manifest.json`, `corpus/fetch.py` | all three paths resolve inside a copied tree | **done** |
 | R22 | Run from any directory | `relay tables` and manifest resolution verified in `C:/tmp/relay-portability` copy | ask/index from a copy not yet exercised | verify after step 3 reruns | `config.py` | copy tree, run `relay tables` → correct rows | **partial** |
 | R23 | Real conversation history preserved | `docs/CONVERSATION.md`: verbatim prompts quoted, turn-by-turn work table, note that the first turn was compacted by the client and is not reconstructed | tool has no export button; pre-compaction text is unrecoverable | user may paste their own export if they have one | `docs/CONVERSATION.md` | prompts quoted match the messages sent | **done (as far as the tool allows)** |
-| R24 | Report 2 pages, headings, every number traceable | 2 pages, headings ok | Tables need new columns; real rows missing | regenerate after data changes | `report/REPORT.md` | `build_pdf.py` page check | **partial** |
+| R24 | Report 2 pages, headings, every number traceable | 2 pages, 12 headings in order, tables generated | real numbers changed the prose | regenerated after every run | `report/REPORT.md` | `build_pdf.py` page check | **done** |
 | R25 | Vaani feedback verified, not invented | live pages read 2026-11-10: hero counters render `0M+` / `0.0%` / `<0ms`; body claims "p90 latency of ~450ms"; `/pricing` has pay-as-you-go (₹1/min, 2 concurrent) and Enterprise, no free plan; screening ~98% under 15 s | not a live call or interview | keep the web-only caveat in the report | `report/FEEDBACK.md`, report | quotes match the fetched pages | **done (web-verified)** |
 | R26 | No key exposure | `.env` ignored; zip and repo scanned | ok | re-scan each commit | `.gitignore` | `git grep gsk_` empty | **done** |
-| R27 | Every table number recomputable from CSV | `relay tables` reads `results.csv` + `results/load/summary.csv` + `limits.json` | limit/probe cells await R1 | regenerate after R1 | `metrics.py` | rerun tables, diff | **partial** |
+| R27 | Every table number recomputable from CSV | `relay tables` reads `results.csv` + `results/load/summary.csv` + `limits.json` | none | keep | `metrics.py` | rerun tables, diff empty | **done** |
 | R28 | CSV schema exact | 12 columns, exact order, 493 rows | none | keep | `csvio.py` | header compare | **done** |
 | R29 | Separate citation-correctness metric | `Quotes verified` column in Table 3 (100.0% all settings) from `results/eval/*.json`; location judged by hand in `citation_correct` | location half is manual | fill manual column | `metrics.py`, `experiments/review.py` | `TABLES.md` Table 3 | **done** |
 | R30 | Refusal and failure categories explained from logs | `docs/ANALYSIS.md`: 0/21 refusals, 210 provider 429s with body quoted, 5x500 with 3 attempts, 1 timeout, 1 truncated stream | synthetic fault rates | keep caveats | `docs/ANALYSIS.md` | figures recomputed from CSV + traces | **done** |

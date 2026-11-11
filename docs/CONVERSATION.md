@@ -30,7 +30,7 @@ reason the repository looks the way it does:
 
 | Rule I set | Where it shows up |
 | --- | --- |
-| Never fabricate a limit, latency, accuracy figure, token count or cost; every number must come from an execution | Table 1's Observed column says `not measured` for all 7 rows rather than quoting a blog post; every row carries `source` |
+| Never fabricate a limit, latency, accuracy figure, token count or cost; every number must come from an execution | Table 1's Observed column carries probe measurements for five rows and says `not measured` for the two the probe could not establish (tokens/day, in-flight); every row carries `source` |
 | If something is unmeasured, say so and name the blocker instead of claiming completion | `docs/AUDIT.md` §6, the report's §2 and §8, and this file's Drive row |
 | Real and stand-in results must be visibly separate | `source` column in every CSV; "stand-in" in every load table caption |
 | Answer grading must be mine, not a model's | `eval/manual_grades.csv` ships with `final_grade` blank; no LLM judge anywhere in `src/relay/grading.py` |
@@ -78,11 +78,13 @@ summary that the compaction produced, labelled as a summary.
 | 5 | "yes continue to make changes" | 13 deterministic fault tests; `sustained` (239 s), `faulty`, `degraded` scenarios; discovered and fixed 49 s of untimed limiter wait (`limit_wait_ms`); report rewritten, still 2 pages |
 | 6 | Final review request | `docs/ANALYSIS.md` refusal/failure breakdown, separate quote-verification metric, `relay review-sheet` and a 60-row grading file, live Vaani page verified |
 | 7 | Second review | Report/CSV mismatch fixed at the cause: the report now imports its tables from `TABLES.md` at build time; the `peak queue = 1` bug traced to a redundant semaphore and removed; two further harness leaks found on re-run (fault rates and rate windows surviving between scenarios in the stand-in's process globals) and fixed with explicit fault parameters and a `POST /reset`; load suite re-run and all figures regenerated |
+| 8 | Third review, with a real key | `probe-limits` run against Groq: first attempt recorded 0 ms TTFT because a reasoning model emits no content at `max_tokens=6`, so the sample was fixed to 64 tokens and the TPM probe moved before the request burst, then re-run. `relay calibrate` wrote `services/standin/params.json`. Eval setting A ran for real: 20/20 answered, 3 correct, 5 wrong, 6 wrongly refused, 6 correctly refused. B and C stayed stand-in because the 200,000-token daily budget could not fund them the same day; `final_grade` remains blank for the user |
 
 ## What the assistant contributed
 
 The implementation, the measurements and the wording of the documents. Where the record
 shows the assistant getting something wrong, it is left in rather than smoothed over: the
-breaker that counted 429s as outages, the 49 s of untimed limiter wait, and the report
-text that survived a load re-run while the CSV did not. Each is listed in `docs/AUDIT.md`
-with the fix.
+breaker that counted 429s as outages, the 49 s of untimed limiter wait, the report text
+that survived a load re-run while the CSV did not, and the first probe that reported 0 ms
+TTFT because a reasoning model returned no visible tokens. Each is listed in
+`docs/AUDIT.md` with the fix.

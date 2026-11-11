@@ -29,15 +29,15 @@ BROWSERS = [
 ]
 
 CSS = """
-@page { size: A4; margin: 9mm 10mm 8mm 10mm; }
+@page { size: A4; margin: 8mm 9mm 7mm 9mm; }
 * { box-sizing: border-box; }
-body { font-family: "Segoe UI", Arial, sans-serif; font-size: 7.8pt; line-height: 1.22;
+body { font-family: "Segoe UI", Arial, sans-serif; font-size: 7.6pt; line-height: 1.18;
        color: #111; margin: 0; }
 h1 { font-size: 12pt; margin: 0 0 3pt 0; letter-spacing: -0.2pt; }
-h2 { font-size: 9pt; margin: 4pt 0 1.2pt 0; border-bottom: 0.5pt solid #bbb;
-     padding-bottom: 0.8pt; page-break-after: avoid; }
-p { margin: 0 0 2.4pt 0; text-align: justify; }
-table { border-collapse: collapse; width: 100%; margin: 1.2pt 0 2.4pt 0; font-size: 6.1pt;
+h2 { font-size: 9pt; margin: 3.4pt 0 1pt 0; border-bottom: 0.5pt solid #bbb;
+     padding-bottom: 0.7pt; page-break-after: avoid; }
+p { margin: 0 0 2.1pt 0; text-align: justify; }
+table { border-collapse: collapse; width: 100%; margin: 1pt 0 2.2pt 0; font-size: 5.9pt;
         table-layout: auto; }
 th, td { border: 0.4pt solid #999; padding: 0.6pt 1.4pt; text-align: left; }
 th { background: #eee; }

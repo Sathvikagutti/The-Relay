@@ -1,0 +1,90 @@
+{
+  "documented": {
+    "source_url": "https://console.groq.com/docs/rate-limits",
+    "read_on": "2026-11-09",
+    "plan": "free",
+    "model": "openai/gpt-oss-120b",
+    "rpm": 30,
+    "rpd": 1000,
+    "tpm": 8000,
+    "tpd": 200000,
+    "note": "Free Plan table; limits apply per organisation, not per key."
+  },
+  "measured_at": "2026-11-11T16:46:35.391710+00:00",
+  "models_available": [
+    "allam-2-7b",
+    "canopylabs/orpheus-arabic-saudi",
+    "canopylabs/orpheus-v1-english",
+    "meta-llama/llama-prompt-guard-2-22m",
+    "meta-llama/llama-prompt-guard-2-86m",
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
+    "openai/gpt-oss-safeguard-20b",
+    "qwen/qwen3.8-27b",
+    "whisper-large-v3",
+    "whisper-large-v3-turbo"
+  ],
+  "target_model_present": true,
+  "latency": {
+    "sample": 10,
+    "ok": 10,
+    "ttft_sample": 10,
+    "ttft_p50_ms": 524.9635999207385,
+    "ttft_p95_ms": 713.767524959985,
+    "total_p50_ms": 531.6023500054143,
+    "total_p95_ms": 720.252004940994,
+    "tokens_out_p50": 36.0,
+    "note": "ttft stats cover only calls that produced visible content"
+  },
+  "observed_from_headers": {
+    "rpd": 1000,
+    "tpm": 8000,
+    "headers": {
+      "x-ratelimit-limit-requests": "1000",
+      "x-ratelimit-remaining-requests": "965",
+      "x-ratelimit-reset-requests": "50m24s",
+      "x-ratelimit-limit-tokens": "8000",
+      "x-ratelimit-remaining-tokens": "7916",
+      "x-ratelimit-reset-tokens": "630ms"
+    }
+  },
+  "tpm_probe": {
+    "requests": 2,
+    "ok": 1,
+    "rate_limited": 1,
+    "prompt_tokens": [
+      4078,
+      0
+    ],
+    "token_limited": [
+      "rate_limited_minute"
+    ],
+    "sample_body": "{\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_***` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 4094, Requested 4094. Please try again in 1.41s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n",
+    "retry_after_s": [
+      null,
+      2.0
+    ]
+  },
+  "rpm_probe": {
+    "requests": 32,
+    "concurrent": 32,
+    "duration_s": 0.87,
+    "ok": 20,
+    "rate_limited": 12,
+    "only_exceeded_at": 20,
+    "retry_after_s": [
+      2.0
+    ],
+    "sample_body": "{\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_***` service tier `on_demand` on requests per minute (RPM): Limit 30, Used 30, Requested 1. Please try again in 2s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"requests\",\"code\":\"rate_limit_exceeded\"}}\n"
+  },
+  "recovery": {
+    "seconds": 3.0,
+    "attempts": 2,
+    "note": "polling every 2s after the burst; None means no recovery within 80s"
+  },
+  "not_measured": {
+    "rpd": "would require exhausting 1,000 requests in a day; header value used instead",
+    "tpd": "would require spending 200,000 tokens; documented value only",
+    "max_in_flight": "not exposed; inferred from RPM/TPM, never observed directly"
+  }
+}

@@ -206,10 +206,19 @@ def table_1(limits_path: Path = LIMITS_PATH) -> str:
     recovery = data.get("recovery", {})
     inflight = data.get("inflight_probe", {})
     latency = data.get("latency", {})
+    # The 429 body states the ceiling it enforced ("Limit 30, Used 30"), which is
+    # stronger evidence than counting how many of our own calls happened to fit.
+    import re as _re
+
+    stated = _re.search(r"[Ll]imit (\d+)", str(rpm.get("sample_body") or ""))
     first_429 = (
-        f"first 429 after {rpm.get('ok')} rapid calls"
-        if rpm.get("rate_limited")
-        else "no 429 in probe"
+        f"{stated.group(1)} (429 body; {rpm.get('ok')} of 32 calls fit)"
+        if stated
+        else (
+            f"429 after {rpm.get('ok')} rapid calls"
+            if rpm.get("rate_limited")
+            else "no 429 in probe"
+        )
     )
     lines += [
         f"| Requests per minute | {documented['rpm']} | {first_429} | 32 concurrent minimal calls | "
@@ -231,7 +240,8 @@ def table_1(limits_path: Path = LIMITS_PATH) -> str:
         lines += [
             "",
             f"First token on a small prompt: p50 {_ms(latency.get('ttft_p50_ms'))} ms, "
-            f"p95 {_ms(latency.get('ttft_p95_ms'))} ms over {latency.get('samples', 'n/a')} calls.",
+            f"p95 {_ms(latency.get('ttft_p95_ms'))} ms over "
+            f"{latency.get('ttft_sample') or latency.get('sample', 'n/a')} calls with visible output.",
         ]
     return "\n".join(lines)
 
@@ -323,10 +333,10 @@ def table_3(rows: list[dict[str, str]], source_label: str) -> str:
         if row["scenario"] == "eval":
             grouped.setdefault(row["retrieval_setting"], []).append(row)
     lines = [
-        "| Setting | Piece size | Fetched | Re-rank | Questions | Correct and cited | Wrong | "
-        "Refused correctly | Refused when answerable | Quotes verified | Tokens out/answer | "
-        "TTFT p50 | TTFT p95 | Total p50 | Total p95 |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| Setting | Source | Piece size | Fetched | Re-rank | Questions | Correct and cited | "
+        "Wrong | Refused correctly | Refused when answerable | Quotes verified | "
+        "Tokens out/answer | TTFT p50 | TTFT p95 | Total p50 | Total p95 |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for setting in sorted(grouped):
         items = grouped[setting]
@@ -342,8 +352,11 @@ def table_3(rows: list[dict[str, str]], source_label: str) -> str:
         cite_cell = (
             f"{100.0 * cites[2] / cites[1]:.1f}%" if cites and cites[1] else "not measured"
         )
+        # Settings need not share a source (A was re-run against Groq, B and C were not),
+        # so the source is part of the row: a quality number without it is ambiguous.
+        item_sources = ", ".join(sorted({row["source"] for row in items}))
         lines.append(
-            f"| {setting} | {piece} | {config.fetch_k if config else 'n/a'} | "
+            f"| {setting} | {item_sources} | {piece} | {config.fetch_k if config else 'n/a'} | "
             f"{config.rerank if config else 'n/a'} | {len(items)} | "
             f"{_pct(counts.get('correct', 0), len(items))} | "
             f"{_pct(counts.get('wrong', 0), len(items))} | "

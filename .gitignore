@@ -28,3 +28,6 @@ report/report.html
 
 # Scratch output from load re-runs (the committed evidence is results/load/*.csv)
 results/load_*.log
+
+# Scratch logs from real runs
+results/eval_real_*.log

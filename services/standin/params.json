@@ -1,0 +1,42 @@
+{
+  "ttft_p50_ms": 525.0,
+  "ttft_p90_ms": 713.8,
+  "per_token_ms": 4.0,
+  "failure_rate": 0.0,
+  "timeout_rate": 0.0,
+  "partial_rate": 0.0,
+  "calibrated": true,
+  "calibrated_from": "0 successful real calls + probe latency sample",
+  "sample_size": 10,
+  "fitted_at": "2026-11-11T16:47:27+00:00",
+  "limits_source": {
+    "source_url": "https://console.groq.com/docs/rate-limits",
+    "read_on": "2026-11-09",
+    "plan": "free",
+    "model": "openai/gpt-oss-120b",
+    "rpm": 30,
+    "rpd": 1000,
+    "tpm": 8000,
+    "tpd": 200000,
+    "note": "Free Plan table; limits apply per organisation, not per key."
+  },
+  "observed_limits": {
+    "rpd": 1000,
+    "tpm": 8000,
+    "headers": {
+      "x-ratelimit-limit-requests": "1000",
+      "x-ratelimit-remaining-requests": "965",
+      "x-ratelimit-reset-requests": "50m24s",
+      "x-ratelimit-limit-tokens": "8000",
+      "x-ratelimit-remaining-tokens": "7916",
+      "x-ratelimit-reset-tokens": "630ms"
+    }
+  },
+  "differences": [
+    "Cold start: the first real request after idle was slower than the fitted TTFT; the stand-in has no cold path.",
+    "Long prompts: real TTFT grows with prompt length (prefill), the stand-in's TTFT is independent of input tokens.",
+    "Concurrency: the real provider queues internally at unknown depth; the stand-in models it as a linear slowdown (queue_dilation).",
+    "Rate limits: counters match the documented window exactly, but the provider's window may roll rather than reset.",
+    "Failures: no 5xx or truncated streams were observed in this sample, so failure_rate=0 is an observation, not a guarantee."
+  ]
+}

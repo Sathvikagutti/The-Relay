@@ -8,6 +8,11 @@ Answers are graded twice:
 Sequential by default. The point of this run is comparable per-question cost and
 latency, not throughput; overlapping requests would let one question's queueing
 delay distort another's numbers.
+
+The degradation ladder is pinned to level 0 here. Under real limits the minute window
+sits near its ceiling for the whole run, so the ladder would trim context for almost
+every question and the three settings would no longer be compared on equal terms;
+the ladder's behaviour is measured by the load scenarios instead, not by this one.
 """
 
 from __future__ import annotations
@@ -25,6 +30,13 @@ from relay.scheduling.limiter import LimiterLimits
 
 RELAXED = LimiterLimits(rpm=600, tpm=2_000_000, rpd=100_000, tpd=50_000_000)
 
+# The limiter reserves `estimate_tokens(prompt) + max_tokens`, which is a character
+# count, not the provider's tokenizer. On the real service that drift is enough to
+# reach a 429 while the client still believes it has room, so the real eval reserves
+# against 90% of the documented TPM. The headroom is a property of this measurement
+# run, not of the shipping limits.
+REAL_HEADROOM = LimiterLimits(rpm=30, tpm=7_200, rpd=1_000, tpd=200_000)
+
 
 @dataclass(frozen=True, slots=True)
 class EvalResult:
@@ -41,13 +53,26 @@ async def run_eval(
     trace_name: str | None = None,
 ) -> EvalResult:
     limits = RELAXED if limit_profile == "relaxed" else DOCUMENTED_LIMITS
+    if source == "real" and limit_profile != "relaxed":
+        limits = REAL_HEADROOM
     runtime = build_runtime(
         source=source,
         setting_name=setting,
         limits=limits,
-        config=PipelineConfig(deadline_ms=120_000 if source == "real" else 30_000),
+        # `gpt-oss-120b` spends completion tokens on reasoning before the JSON body.
+        # At the stand-in budgets (160/340) a real draft was cut off at 335/340 tokens
+        # and could not be parsed, so the real path gets headroom: a longer ceiling
+        # costs nothing unless the tokens are actually generated.
+        config=PipelineConfig(
+            deadline_ms=120_000 if source == "real" else 30_000,
+            max_tokens_analysis=320 if source == "real" else 160,
+            max_tokens_answer=700 if source == "real" else 340,
+        ),
         trace_name=trace_name or f"eval_{setting}_{source}",
         budget_state=False,
+        # One run, one raw file: appending left rows from an interrupted run in the
+        # trace, so raw line counts stopped matching the CSV rows written beside them.
+        truncate_trace=True,
     )
     questions = load_questions(questions_path)
     rows: list[dict[str, object]] = []
@@ -57,6 +82,7 @@ async def run_eval(
             trace, answer = await runtime.relay.run(
                 question.question,
                 scenario="eval",
+                degrade=0,
                 grader=lambda ans, q=question: auto_grade(ans, q),
             )
             grade = trace.answer_grade
