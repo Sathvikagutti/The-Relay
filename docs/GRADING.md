@@ -48,9 +48,13 @@ the right chunk but misstates it, which is exactly why Table 3 uses reviewed gra
 
 ## Reviewed grades (Table 3)
 
-`eval/manual_grades.csv` lists every evaluation row with its `request_id`, retrieval
-setting, the automatic grade and an empty `final_grade`. Each row is read once against
+`eval/manual_grades.csv` lists the real-service Setting A rows (20) with their
+`request_id`, retrieval setting, the automatic grade and an empty `final_grade`. B and C
+are still stand-in runs and are not in the sheet, because their real runs need a fresh
+daily token budget. Each row is read once against
 the `reference` answer in `eval/questions.yaml` and gets a `final_grade`;
 `relay tables` prefers that column whenever it is present and says in the footnote
 whether the grades are reviewed or automatic - they are never silently blended. At
-submission time the column is still empty, so Table 3 is labelled automatic.
+submission time 0 of 20 rows carry a human grade, so Table 3 says `0/20` reviewed and is
+labelled automatic; `relay tables` switches to human grades only where the column is
+filled, never blending the two silently.

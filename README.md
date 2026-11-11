@@ -87,10 +87,9 @@ docs/              plan, decisions, grading, checklist, audit, analysis, intervi
 
 Everything numeric lives in `results/results.csv` (one row per request, exact columns
 required by the brief) and `report/TABLES.md` (regenerated with `relay tables`, never
-typed by hand). `results/limits.json` does not exist in this submission: it is written by
-`relay probe-limits`, which needs `GROQ_API_KEY`. It has been run (`results/limits.json`), so Table 1 reports measured values where the
-probe could establish them and says `not measured` for tokens/day and in-flight, which
-it could not.
+typed by hand). `results/limits.json` is written by `relay probe-limits`, which needs
+`GROQ_API_KEY`; it has been run, so Table 1 reports measured values where the probe could
+establish them and says `not measured` for tokens/day and in-flight, which it could not.
 
 ## What this does not do
 
@@ -107,4 +106,4 @@ failure mode.
   uses reviewed grades where they exist and says so when they do not.
 * The stand-in cannot reproduce cold starts or prefill scaling; the differences are listed
   in its calibration metadata, `services/standin/params.json`, which `relay calibrate`
-  writes. That file does not exist yet, and the stand-in reports `calibrated: false`.
+  writes. That file is committed and the stand-in reports `calibrated: true`.

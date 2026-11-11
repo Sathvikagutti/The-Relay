@@ -230,7 +230,8 @@ def table_1(limits_path: Path = LIMITS_PATH) -> str:
         f"| Tokens per day | {documented['tpd']} | not measured | would cost 200k tokens to reach | "
         f"documented |",
         f"| Requests in flight | - | {inflight.get('max_ok_concurrent', 'not measured')} | "
-        f"ramped concurrency until refusal | {'measured' if inflight else 'not measured'} |",
+        f"no header exposes it; a ramp would hit the token ceiling first | "
+        f"{'measured' if inflight else 'not measured'} |",
         f"| What happens when a limit is hit | - | "
         f"HTTP 429, retry-after {rpm.get('retry_after_s', 'n/a')} s | captured 429 response | measured |",
         f"| Time until recovery | - | {recovery.get('seconds', 'not measured')} s | polled every 2 s | "
@@ -333,10 +334,11 @@ def table_3(rows: list[dict[str, str]], source_label: str) -> str:
         if row["scenario"] == "eval":
             grouped.setdefault(row["retrieval_setting"], []).append(row)
     lines = [
-        "| Setting | Source | Piece size | Fetched | Re-rank | Questions | Correct and cited | "
-        "Wrong | Refused correctly | Refused when answerable | Quotes verified | "
-        "Tokens out/answer | TTFT p50 | TTFT p95 | Total p50 | Total p95 |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| Setting | Source | Piece size | Fetched | Re-rank | Questions | Human-reviewed | "
+        "Correct and cited | Wrong | Refused correctly | Refused when answerable | "
+        "Quotes verified | Tokens out/answer | TTFT p50 | TTFT p95 | Total p50 | Total p95 |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | "
+        "--- | --- |",
     ]
     for setting in sorted(grouped):
         items = grouped[setting]
@@ -355,9 +357,10 @@ def table_3(rows: list[dict[str, str]], source_label: str) -> str:
         # Settings need not share a source (A was re-run against Groq, B and C were not),
         # so the source is part of the row: a quality number without it is ambiguous.
         item_sources = ", ".join(sorted({row["source"] for row in items}))
+        reviewed = sum(1 for row in items if human.get(row["request_id"]))
         lines.append(
             f"| {setting} | {item_sources} | {piece} | {config.fetch_k if config else 'n/a'} | "
-            f"{config.rerank if config else 'n/a'} | {len(items)} | "
+            f"{config.rerank if config else 'n/a'} | {len(items)} | {reviewed}/{len(items)} | "
             f"{_pct(counts.get('correct', 0), len(items))} | "
             f"{_pct(counts.get('wrong', 0), len(items))} | "
             f"{_pct(counts.get('refused_correctly', 0), len(items))} | "
@@ -377,7 +380,11 @@ def table_3(rows: list[dict[str, str]], source_label: str) -> str:
         "`verify_quote` tool matched exactly against the retrieved chunk - and is never "
         "folded into the answer grade. Whether a verified quote points at the *right* "
         "passage is the other half of citation correctness; that judgement is made by "
-        "hand in `eval/manual_grades.csv` (`citation_correct` column)."
+        "hand in `eval/manual_grades.csv` (`citation_correct` column). "
+        "Human-reviewed counts rows whose `final_grade` is filled; where it is 0 the row's "
+        "grades are the automatic gold-region check and are **not** a human verdict. "
+        "Missing evaluations: there are no real-service rows for B or C, so A's row is not "
+        "a controlled comparison with the two stand-in rows."
     )
     return "\n".join(lines)
 

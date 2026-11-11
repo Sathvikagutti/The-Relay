@@ -1,7 +1,8 @@
 # Submission checklist
 
 Mirrors the brief, one line per requirement, with where to find the evidence.
-Anything pending is marked **PENDING**, never quietly omitted.
+Anything pending is marked **PENDING**, never quietly omitted. Last checked against
+commit `8c6a683` (2026-11-11).
 
 ## Required artefacts
 
@@ -16,27 +17,30 @@ Anything pending is marked **PENDING**, never quietly omitted.
 | Every answer cites paper + page/section | done, enforced | `verify_citations`; page/section from metadata only |
 | Refuses when the papers do not answer | done | out-of-library branch, `REFUSAL_NO_PASSAGE` |
 | No unsupported answer sent to look fast | done, measured | latency includes verification; failures are recorded as failures |
-| Real Groq free-tier calls, modest | **PENDING key** (nothing invented) | `relay probe-limits`, `relay calibrate`, `relay eval --source real` |
-| Calibrated stand-in for heavy load | code done, params **PENDING key** | `services/standin/`, `relay calibrate` |
-| State where stand-in differs least/most | done in prose; `params.json` absent until `relay calibrate` runs | `services/standin/params.json` (written by calibrate), report §2 |
-| 5 load scenarios | done (stand-in) | `relay load`, `results/load/*.csv` |
-| Per-minute limit halved scenario | done | `limit_halved` scenario |
-| Daily budget exhausted scenario | done | `daily_exhausted` scenario |
-| `results.csv` with exact columns | done | `results/results.csv` (schema enforced on write) |
+| Real Groq free-tier calls, modest | done | probe (2 runs), calibration, eval setting A: 20 real rows in `results/results.csv` |
+| Measured limits, not documented guesses | done (5 of 7 rows) | `results/limits.json`; tokens/day and in-flight stay `not measured` |
+| Calibrated stand-in for heavy load | done | `services/standin/params.json`, `/health` -> `calibrated: true` |
+| State where stand-in differs least/most | done | `params.json` `differences`, report §2 |
+| 5 load scenarios | done (8 scenarios, stand-in) | `relay load`, `results/load/*.csv` |
+| Per-minute limit halved scenario | done | `limit_halved` |
+| Daily budget exhausted scenario | done | `daily_exhausted` |
+| Sustained overload 3-5 min | done | `sustained`, 240 requests, 239.0 s |
+| `results.csv` with exact columns | done (493 rows) | `results/results.csv`, schema enforced on write |
 | Status values from the allowed set | enforced | `obs/csvio.py` raises on anything else |
 | Grades from the allowed set | enforced | same |
-| Every table number recomputable from the CSV | done | `relay tables` reads only the CSV (+ `limits.json` for Table 1) |
+| Every table number recomputable from the CSV | done | `relay tables` reads the CSV (+ `limits.json` for Table 1) |
 | >= 15 self-written questions, 5 buckets | done | `eval/questions.yaml` (20) |
-| Explicit grading rules | done | `docs/GRADING.md` |
-| Manual verification of answers | **PENDING (author's judgement)** | `eval/manual_grades.csv` + `eval/review_sheet.md` via `relay review-sheet` |
-| No LLM-as-judge | done | mechanical quote/gold checks only |
-| 2-page report, headings 1-8 in order | done (stand-in numbers) | `report/REPORT.pdf` (2 pages, heading check passes) |
-| Extra sections after heading 5 | done in draft | Retrieval quality vs cost; How the library misleads a naive retriever |
-| Tables 1, 2a, 2b, 3 filled ("not measured" allowed) | done | `report/TABLES.md`, embedded in the report |
-| Feedback on Vaani | **PENDING user voice** | `report/FEEDBACK.md` draft |
-| How I worked with the assistant | done | `docs/conversation-log.md` |
-| API key never printed or committed | verified | `.env` gitignored; no key in any tracked file |
+| Explicit grading rules, no LLM judge | done | `docs/GRADING.md` |
+| Manual verification of answers | **PENDING (author's judgement)** | `eval/manual_grades.csv` + `eval/review_sheet.md`; 0 of 20 filled |
+| Real evaluation of settings B and C | **PENDING (daily token quota)** | command below; A is real, B/C are stand-in |
+| 2-page report, headings in order | done | `report/REPORT.pdf` (2 pages, heading check passes) |
+| Extra sections after heading 5 | done | Retrieval quality vs cost; How the library misleads a naive retriever |
+| Tables 1, 2a, 2b, 3 filled (`not measured` allowed) | done | `report/TABLES.md`, expanded at build time |
+| Feedback on Vaani | done (web-verified) | report section; `report/FEEDBACK.md` |
+| How I worked with the assistant | done | `docs/CONVERSATION.md` |
+| API key never printed or committed | verified | `.env` gitignored; `git grep gsk_` on HEAD is empty |
 | No extra accounts or paid services | verified | only Groq + local stand-in |
+| Submission ZIP | done locally | `dist/The-Relay.zip` (rebuilt from this commit, `.env` excluded) |
 
 ## Commands that produce each artefact
 
@@ -44,15 +48,34 @@ Anything pending is marked **PENDING**, never quietly omitted.
 relay fetch-corpus --check          # pin verification
 relay probe-limits                  # ~45 real requests, writes results/limits.json
 relay calibrate                     # fits stand-in params from the probe
-relay eval --settings A B C --source stand-in
-relay eval --settings A --source real
-relay load --source stand-in        # five scenarios
+relay eval --settings A --source real --limits documented
+relay eval --settings B C --source real --limits documented   # pending quota reset
+relay load --source stand-in        # eight scenarios
 relay combine                       # merges row files -> results/results.csv
 relay tables --write                # regenerates report/TABLES.md
+python report/build_pdf.py          # 2-page PDF, exits non-zero above 2 pages
 ```
 
-## Pending because the key is not in `.env`
+## Pending, and why
 
-The free-tier key is a placeholder (`replace_me`). Everything that needs it is written
-and runnable, but no real number has been invented to fill the gap: those tables say
-`not measured` and the report says so in the caveats.
+* **Real B and C evaluation.** The probe and setting A consumed roughly 150,000 of the
+  200,000 daily tokens. B and C need about 33,000 each, so running them the same day
+  risks finishing mid-run with `rate_limited` rows in the table. They are left as
+  stand-in rows, each labelled `stand-in` in Table 3's new Source column, rather than
+  presented as a controlled comparison.
+* **Manual grading.** `eval/manual_grades.csv` has 20 real Setting A rows with
+  `final_grade` blank. Grading is the author's judgement and is not generated here.
+* **Drive upload.** No Drive upload tool is bound to this session. The ZIP is built and
+  verified locally; upload instructions are in `docs/SUBMISSION.md` §Upload.
+
+## Upload
+
+`dist/The-Relay.zip` is built from the working tree at this commit and verified to
+contain no `.env`, no virtual environment and no API key. To submit:
+
+1. Open https://drive.google.com/drive/u/0/folders/1A3jHjks7wZHlgU9E78GakHlXtuiFxnnJ
+2. Right-click -> File upload -> `dist/The-Relay.zip`
+3. After the upload completes, right-click the file -> Share -> copy link, and check
+   that the link opens in a signed-out window (the folder is shared, not private).
+
+This session had no Drive tool bound, so the upload is left to you rather than claimed.

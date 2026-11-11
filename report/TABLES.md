@@ -10,7 +10,7 @@ Rows: 493. Source(s): real, stand-in.
 | Tokens per minute | 8000 | 8000 | `x-ratelimit-limit-tokens` header | header |
 | Requests per day | 1000 | 1000 | `x-ratelimit-limit-requests` header | header |
 | Tokens per day | 200000 | not measured | would cost 200k tokens to reach | documented |
-| Requests in flight | - | not measured | ramped concurrency until refusal | not measured |
+| Requests in flight | - | not measured | no header exposes it; a ramp would hit the token ceiling first | not measured |
 | What happens when a limit is hit | - | HTTP 429, retry-after [2.0] s | captured 429 response | measured |
 | Time until recovery | - | 3.0 s | polled every 2 s | measured |
 
@@ -44,13 +44,13 @@ First token on a small prompt: p50 525 ms, p95 714 ms over 10 calls with visible
 
 ## Table 3 - retrieval settings, quality and cost
 
-| Setting | Source | Piece size | Fetched | Re-rank | Questions | Correct and cited | Wrong | Refused correctly | Refused when answerable | Quotes verified | Tokens out/answer | TTFT p50 | TTFT p95 | Total p50 | Total p95 |
+| Setting | Source | Piece size | Fetched | Re-rank | Questions | Human-reviewed | Correct and cited | Wrong | Refused correctly | Refused when answerable | Quotes verified | Tokens out/answer | TTFT p50 | TTFT p95 | Total p50 | Total p95 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| A | real | 350/60 | 4 | none | 20 | 15.0% | 25.0% | 30.0% | 30.0% | 100.0% | 745 | 912 | 2015 | 3761 | 58332 |
-| B | stand-in | 700/100 | 4 | none | 20 | 20.0% | 80.0% | 0.0% | 0.0% | not measured | 80 | 168 | 585 | 1647 | 2455 |
-| C | stand-in | 350/60 | 16 | cross_encoder | 20 | 25.0% | 75.0% | 0.0% | 0.0% | not measured | 81 | 221 | 824 | 1723 | 2505 |
+| A | real | 350/60 | 4 | none | 20 | 0/20 | 15.0% | 25.0% | 30.0% | 30.0% | 100.0% | 745 | 912 | 2015 | 3761 | 58332 |
+| B | stand-in | 700/100 | 4 | none | 20 | 0/20 | 20.0% | 80.0% | 0.0% | 0.0% | not measured | 80 | 168 | 585 | 1647 | 2455 |
+| C | stand-in | 350/60 | 16 | cross_encoder | 20 | 0/20 | 25.0% | 75.0% | 0.0% | 0.0% | not measured | 81 | 221 | 824 | 1723 | 2505 |
 
-Source: real, stand-in. Grades: automatic gold-region check, not human. Quotes verified is a separate axis - the share of quoted citations the `verify_quote` tool matched exactly against the retrieved chunk - and is never folded into the answer grade. Whether a verified quote points at the *right* passage is the other half of citation correctness; that judgement is made by hand in `eval/manual_grades.csv` (`citation_correct` column).
+Source: real, stand-in. Grades: automatic gold-region check, not human. Quotes verified is a separate axis - the share of quoted citations the `verify_quote` tool matched exactly against the retrieved chunk - and is never folded into the answer grade. Whether a verified quote points at the *right* passage is the other half of citation correctness; that judgement is made by hand in `eval/manual_grades.csv` (`citation_correct` column). Human-reviewed counts rows whose `final_grade` is filled; where it is 0 the row's grades are the automatic gold-region check and are **not** a human verdict. Missing evaluations: there are no real-service rows for B or C, so A's row is not a controlled comparison with the two stand-in rows.
 
 Table 2a latency covers successful requests only; refused and timed-out requests are counted in Table 2b, because a 7 ms refusal is not a 7 ms answer.
 
