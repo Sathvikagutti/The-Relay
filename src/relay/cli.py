@@ -225,6 +225,26 @@ def cmd_combine(args: argparse.Namespace) -> int:
                 continue
             seen.add(row["request_id"])
             rows.append(row)
+    # A real evaluation supersedes the stand-in run of the same retrieval setting.
+    # Without this, running B/C for real tomorrow would leave both row files on disk
+    # and Table 3 would report 40 questions per setting, averaging measured answers
+    # with simulated ones. Real rows are never dropped, only stand-in rows they replace.
+    real_settings = {
+        row["retrieval_setting"]
+        for row in rows
+        if row["scenario"] == "eval" and row["source"] == "real"
+    }
+    superseded = [
+        row
+        for row in rows
+        if row["scenario"] == "eval"
+        and row["source"] == "stand-in"
+        and row["retrieval_setting"] in real_settings
+    ]
+    if superseded:
+        drop = {id(row) for row in superseded}
+        rows = [row for row in rows if id(row) not in drop]
+
     rows.sort(key=lambda row: (row["start_time"], row["request_id"]))
     target = resolve(Path("results/results.csv"))
     write_results(rows, target)  # type: ignore[arg-type]
@@ -232,6 +252,8 @@ def cmd_combine(args: argparse.Namespace) -> int:
     for row in rows:
         counts[row["scenario"]] = counts.get(row["scenario"], 0) + 1
     print(f"{len(rows)} rows -> {target}")
+    if superseded:
+        print(f"  dropped {len(superseded)} stand-in eval rows superseded by real runs")
     print(f"by scenario: {counts}")
     return 0
 
